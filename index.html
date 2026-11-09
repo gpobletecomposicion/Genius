@@ -196,55 +196,24 @@ body.is-offline .offline-chip{display:block}
     <div class="toggle" role="switch" tabindex="0" aria-checked="false" data-client-toggle>
       Modo cliente <span class="switch" aria-hidden="true"></span>
     </div>
-    <p class="stamp">Datos del dossier EX30 al 11 oct 2026. Precios y tarifas: verificar antes de cotizar.</p>
+    <p class="stamp" id="stamp"></p>
     <p class="offline-chip">Sin conexión: funcionando con los datos guardados</p>
   </nav>
   <main id="view" tabindex="-1"></main>
 </div>
 <nav class="mobile-nav" id="mobilenav" aria-label="Secciones"></nav>
 
+<script src="modelos.js"></script>
 <script>
-/* ---------- Datos (fuente: dossier EX30 de Gonzalo, ficha Inchcape MY27) ---------- */
-const DATA_DATE = "11 oct 2026";
-const V = {
-  core:{id:"core",name:"Core",code:"E40",drive:"Single Motor",price:29900000,gross:51,net:49,chem:"LFP",motors:"1 (trasero)",kw:200,hp:272,nm:343,traction:"Trasera",acc:5.7,vmax:180,wltp:344,real:"250–290",dc:130,dc1080:26,ac:11,wheels:'18"',cons:17.0,mass:1850,daily:"Hasta 100%",recall:false,
-    fit:"Uso urbano, menos de 50 km diarios, carga en casa y presupuesto ajustado. Le sobra autonomía para la semana.",
-    notes:["Fuera de la campaña de seguridad: sus celdas LFP son de otro proveedor.","Admite carga diaria al 100% sin castigar la batería.","Carga 10–80% en ~26 min: más rápido que Plus y Ultra, porque tiene menos kWh que llenar.","No trae Pilot Assist: es la diferencia funcional más importante frente al Plus."]},
-  plus:{id:"plus",name:"Plus",code:"E60",drive:"Single Motor Extended Range",price:36900000,gross:69,net:64,chem:"NMC",motors:"1 (trasero)",kw:200,hp:272,nm:343,traction:"Trasera",acc:5.3,vmax:180,wltp:480,real:"350–400",dc:153,dc1080:27,ac:11,wheels:'19"',cons:17.5,mass:1900,daily:"20% a 90%",recall:true,
-    fit:"Sale a regiones de vez en cuando y quiere Pilot Assist y buen confort. Con llantas 19\" es la marcha más cómoda de la gama.",
-    notes:["Unidades 2024–2025 (E60) alcanzadas por la campaña 26129V01: verificar VIN.","Carga diaria recomendada hasta 90%.","La ficha Inchcape lista sus llantas como 10\": es una errata, son 19\"."]},
-  ultra:{id:"ultra",name:"Ultra",code:"E60",drive:"Single Motor Extended Range",price:39900000,gross:69,net:64,chem:"NMC",motors:"1 (trasero)",kw:200,hp:272,nm:343,traction:"Trasera",acc:5.3,vmax:180,wltp:480,real:"350–400",dc:153,dc1080:27,ac:11,wheels:'20"',cons:17.5,mass:1920,daily:"20% a 90%",recall:true,
-    fit:"Quiere el equipamiento completo, estaciona a diario en ciudad (cámara 360°) y valora la calefacción en invierno.",
-    notes:["El sunroof es fijo, no se abre: decirlo antes de la entrega.","Llantas 20\": marcha más firme y neumáticos más caros de renovar.","Unidades 2024–2025 (E60) en campaña 26129V01: verificar VIN."]},
-  cc:{id:"cc",name:"Cross Country",code:"—",drive:"Twin Motor Performance",price:49900000,gross:69,net:64,chem:"NMC",motors:"2 (trasero + delantero)",kw:315,hp:428,nm:543,traction:"Integral",acc:3.7,vmax:180,wltp:427,real:"310–360",dc:null,dc1080:26,ac:11,wheels:'19"',cons:18.5,mass:1960,daily:"20% a 90%",recall:true,
-    fit:"Busca imagen aventurera, tracción integral y desempeño. 190 mm de altura libre. Paga $10 millones sobre el Ultra y cede algo de autonomía.",
-    notes:["Equipamiento chileno y carga DC máxima: por confirmar con Inchcape.","Twin Motor: verificar VIN contra la campaña de batería."]}
-};
-const ORDER = ["core","plus","ultra","cc"];
-const EQUIP = [
-  ["Pilot Assist (hasta 130 km/h)","—","Sí","Sí"],
-  ["Clean Zone (filtrado de aire)","—","Sí","Sí"],
-  ["Climatizador","1 zona","2 zonas","2 zonas"],
-  ["Audio","High Performance","Harman Kardon","Harman Kardon"],
-  ["Keyless entry","—","Sí","Sí"],
-  ["Carga inalámbrica de celular","—","Sí","Sí"],
-  ["Asientos delanteros eléctricos","—","Sí","Sí"],
-  ["Portalón eléctrico","—","Sí","Sí"],
-  ["Cámara de estacionamiento","Trasera","Trasera","360° con vista 3D"],
-  ["Park Pilot Assist","—","—","Sí"],
-  ["Sunroof panorámico (fijo)","—","—","Sí"],
-  ["Asientos y volante calefaccionados","—","—","Sí"],
-  ["Lumbar eléctrico","—","—","Sí"]
-];
-const RANGE = [
-  {name:"EX30",what:"SUV compacto 100% eléctrico",from:"Desde $29.900.000",live:true},
-  {name:"EX40",what:"SUV 100% eléctrico"},
-  {name:"EC40",what:"SUV coupé 100% eléctrico"},
-  {name:"EX90",what:"SUV de 7 plazas 100% eléctrico"},
-  {name:"XC40",what:"Mild hybrid"},
-  {name:"XC60",what:"Híbrido enchufable T8 AWD"},
-  {name:"XC90",what:"Híbrido enchufable de 7 plazas"}
-];
+/* ---------- Datos: vienen de modelos.js ---------- */
+const DATA_DATE = GENIUS_DATA.fecha;
+const M = GENIUS_DATA.modelos.ex30;
+const V = M.versiones;
+const ORDER = M.orden;
+const EQUIP = M.equipamiento;
+const RANGE = GENIUS_DATA.gama;
+const CAMP = GENIUS_DATA.campana;
+const fromPrice = id => Math.min(...Object.values(GENIUS_DATA.modelos[id].versiones).map(v=>v.price));
 const COND = {ciudad:{label:"Ciudad",f:0.86},mixto:{label:"Mixto",f:1},autopista:{label:"Autopista",f:1.2}};
 
 /* ---------- Estado (guardado en este navegador) ---------- */
@@ -255,8 +224,7 @@ const DEFAULTS = {
   years:5, kmYear:15000, priceIce:32000000, maintEv:200000, maintIce:450000,
   permEv:120000, permIce:380000, insEv:1000000, insIce:1000000, resEv:50, resIce:50,
   from:20, to:80, charger:"wb7",
-  limit:100, reserve:true,
-  speed:60, eff:65, tripKm:20, stops:30, stopSpeed:40
+  limit:100, reserve:true
 };
 let S;
 try{ S = Object.assign({},DEFAULTS, JSON.parse(localStorage.getItem("genius-state")||"{}")); }catch(e){ S = {...DEFAULTS}; }
@@ -270,7 +238,7 @@ const consOf = (v) => v.cons * COND[S.cond].f * (S.cold ? 1.2 : 1); // kWh/100 k
 /* ---------- Navegación ---------- */
 const ROUTES = [
   ["gama","Gama"],["ex30","EX30"],["comparar","Comparar versiones"],["energia","Costo de energía"],
-  ["costo-total","Costo total"],["carga","Tiempo de carga"],["autonomia","Autonomía real"],["regeneracion","Regeneración"],["campana","Campaña de batería"]
+  ["costo-total","Costo total"],["carga","Tiempo de carga"],["autonomia","Autonomía real"],["campana","Campaña de batería"]
 ];
 function navHTML(cur){ return ROUTES.map(([id,l])=>`<a href="#${id}" ${id===cur?'aria-current="page"':''}>${l}</a>`).join(""); }
 
@@ -300,23 +268,21 @@ views.gama = () => `
   <h1>Gama Volvo Chile</h1>
   <p class="lede">Toca un modelo para ver versiones, ficha y argumentos. El EX30 está completo; el resto se suma desde tus dossiers.</p>
   <div class="range-grid">
-    ${RANGE.map(m=> m.live
-      ? `<a class="car live" href="#ex30"><div class="name">${m.name}</div><div class="what">${m.what}</div><div class="from">${m.from}</div></a>`
-      : `<div class="car soon"><div class="name">${m.name}</div><div class="what">${m.what}</div><span class="chip">Próxima versión</span></div>`).join("")}
+    ${RANGE.map(m=> m.modelo && views[m.modelo]
+      ? `<a class="car live" href="#${m.modelo}"><div class="name">${m.nombre}</div><div class="what">${m.tipo}</div><div class="from">Desde ${clp(fromPrice(m.modelo))}</div></a>`
+      : `<div class="car soon"><div class="name">${m.nombre}</div><div class="what">${m.tipo}</div><span class="chip">Próxima versión</span></div>`).join("")}
   </div>
   <h2>Calculadoras</h2>
   <div class="range-grid">
     <a class="car" href="#energia"><div class="name" style="font-size:1.25rem">Costo de energía</div><div class="what">Cuánto cuesta el km frente a la bencina, al mes y al año.</div></a>
     <a class="car" href="#costo-total"><div class="name" style="font-size:1.25rem">Costo total</div><div class="what">Compra, energía, mantención, permiso y seguro a varios años.</div></a>
     <a class="car" href="#carga"><div class="name" style="font-size:1.25rem">Tiempo de carga</div><div class="what">Del % actual al % objetivo, en casa o en electrolinera.</div></a>
-    <a class="car" href="#regeneracion"><div class="name" style="font-size:1.25rem">Regeneración</div><div class="what">Cuánta energía devuelve una frenada y un día de ciudad.</div></a>
+    <a class="car" href="#autonomia"><div class="name" style="font-size:1.25rem">Autonomía real</div><div class="what">Kilómetros entre cargas según uso, clima y límite de carga.</div></a>
   </div>`;
 
 views.ex30 = () => {
   const v = ver();
-  const idx = ORDER.indexOf(v.id);
-  const eq = v.id==="cc" ? `<p class="hint">El Cross Country se ofrece en un único nivel. En otros mercados equivale al Ultra; la ficha chilena está pendiente de confirmar.</p>`
-    : `<ul class="list">${EQUIP.map(r=>`<li><span>${r[0]}</span><b>${r[idx+1]}</b></li>`).join("")}</ul>`;
+  const eq = `<ul class="list">${EQUIP.map(r=>`<li><span>${r.item}</span><b>${r[v.id]}</b></li>`).join("")}</ul>`;
   return `
   <div class="model-head">
     <div><h1>EX30 ${v.name}</h1><p class="lede" style="margin:0">${v.drive} · batería ${v.gross} kWh ${v.chem}</p></div>
@@ -338,7 +304,9 @@ views.ex30 = () => {
         <li><span>Motores</span><b>${v.motors}</b></li>
         <li><span>Tracción</span><b>${v.traction}</b></li>
         <li><span>Autonomía realista (mixto)</span><b>${v.real} km</b></li>
-        <li><span>Carga DC máxima</span><b>${v.dc?v.dc+" kW":"Por confirmar"}</b></li>
+        <li><span>Carga DC máxima</span><b>${v.dc?v.dc+" kW":"No informada"}</b></li>
+        ${v.dc50?`<li><span>Carga 10–80% con 50 kW</span><b>~${v.dc50} min</b></li>`:""}
+        <li><span>Bomba de calor</span><b>${M.bombaCalor}</b></li>
         <li><span>Carga AC máxima</span><b>${v.ac} kW</b></li>
         <li><span>Carga diaria recomendada</span><b>${v.daily}</b></li>
         <li><span>Llantas</span><b>${v.wheels}</b></li>
@@ -349,19 +317,20 @@ views.ex30 = () => {
       <div class="panel"><h3>Para quién es</h3><p style="margin:0">${v.fit}</p></div>
       <div class="note internal"><span class="internal-tag">Solo para ti</span>${v.notes.map(n=>`<p>${n}</p>`).join("")}</div>
       <div class="panel" style="margin-top:12px"><h3>Comunes a todas</h3>
-        <p style="margin:0">4.233 mm de largo, radio de giro ~10 m, maletero 318 l (hasta 1.000 l), cinco estrellas Euro NCAP, garantía de batería 8 años o 160.000 km, conectores Tipo 2 y CCS2.</p></div>
+        <p style="margin:0">${M.comunes}</p>
+        <ul class="list" style="margin-top:10px"><li><span>Garantía</span><b>${M.garantia}</b></li><li><span>Mantención</span><b>${M.mantencion}</b></li></ul></div>
     </div>
   </div>
   <h2>Equipamiento ${v.name}</h2>
   <div class="panel">${eq}</div>
-  <div class="note internal"><span class="internal-tag">Solo para ti</span><p>Los precios publicados son con financiamiento Amicar y bonos, en unidades limitadas. Manejar siempre las dos cifras. Usa las autonomías de Inchcape (344 y 480 km), no las de volvocars.com.</p></div>`;
+  <div class="note internal"><span class="internal-tag">Solo para ti</span>${M.notasInternas.map(n=>`<p>${n}</p>`).join("")}</div>`;
 };
 
 views.comparar = () => {
   const rows = [
     ["Precio desde",v=>clp(v.price)],["Código",v=>v.code],["Batería",v=>`${v.gross} kWh ${v.chem}`],["Motores",v=>v.motors],
     ["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],["Tracción",v=>v.traction],["0–100 km/h",v=>`${fmt(v.acc,1)} s`],
-    ["Autonomía WLTP",v=>`${v.wltp} km`],["Autonomía realista",v=>`${v.real} km`],["Carga DC máx.",v=>v.dc?`${v.dc} kW`:"Por confirmar"],
+    ["Autonomía WLTP",v=>`${v.wltp} km`],["Autonomía realista",v=>`${v.real} km`],["Carga DC máx.",v=>v.dc?`${v.dc} kW`:"No informada"],
     ["Carga DC 10–80%",v=>`~${v.dc1080} min`],["Carga diaria",v=>v.daily],["Llantas",v=>v.wheels]
   ];
   const line = (label,vals) => { const diff = new Set(vals).size>1; return `<tr class="${diff?"diff":""}"><th scope="row">${label}</th>${vals.map(x=>`<td>${x}</td>`).join("")}</tr>`; };
@@ -373,12 +342,11 @@ views.comparar = () => {
     <tbody>
       ${rows.map(([l,f])=>line(l,ORDER.map(k=>f(V[k])))).join("")}
       <tr class="group"><th colspan="5">Equipamiento</th></tr>
-      ${EQUIP.map(r=>line(r[0],[r[1],r[2],r[3],"Por confirmar"])).join("")}
+      ${EQUIP.map(r=>line(r.item,ORDER.map(k=>r[k]))).join("")}
     </tbody>
   </table></div>
   <div class="grid2" style="margin-top:18px">
-    <div class="panel"><h3>Core → Plus, +$7.000.000</h3><p style="margin:0">18 kWh más de batería y 136 km más de autonomía, más Pilot Assist, Clean Zone, Harman Kardon, climatizador bizona, keyless, carga inalámbrica, asientos y portalón eléctricos.</p></div>
-    <div class="panel"><h3>Plus → Ultra, +$3.000.000</h3><p style="margin:0">Confort y asistencia: sunroof, cámara 360°, estacionamiento asistido, calefacción de asientos y volante, lumbar eléctrico y llantas 20".</p></div>
+    ${M.pasos.map(p=>`<div class="panel"><h3>${V[p.de].name} → ${V[p.a].name}, +${clp(V[p.a].price-V[p.de].price)}</h3><p style="margin:0">${p.texto}</p></div>`).join("")}
   </div>`;
 };
 
@@ -454,7 +422,7 @@ views["costo-total"] = () => `
       ${range("years","Años de uso",1,8,1," años")}
       ${range("kmYear","Kilómetros por año",5000,40000,1000," km")}
       ${money("priceIce","Precio del auto a bencina comparado","$","","El modelo que el cliente está mirando")}
-      <div class="two">${money("maintEv","Mantención EX30 / año")}${money("maintIce","Mantención bencina / año")}</div>
+      <div class="two">${money("maintEv","Mantención EX30 / año","$","","Pauta: "+M.mantencion.toLowerCase())}${money("maintIce","Mantención bencina / año")}</div>
       <div class="two">${money("permEv","Permiso EX30 / año","$","","Descuento progresivo hasta 2031")}${money("permIce","Permiso bencina / año")}</div>
       <div class="two">${money("insEv","Seguro EX30 / año")}${money("insIce","Seguro bencina / año")}</div>
       <div class="two">${range("resEv","Reventa EX30",20,80,5,"%")}${range("resIce","Reventa bencina",20,80,5,"%")}</div>
@@ -558,79 +526,26 @@ function renderRangeResult(){
     ${S.limit===70?`<div class="note warn internal"><p>Con el límite preventivo de la campaña, un Plus o Ultra rinde menos que un Core. Si un dueño reclama autonomía, conecta su reclamo con la campaña.</p></div>`:""}`;
 }
 
-views.regeneracion = () => `
-  <h1>Regeneración</h1>
-  <p class="lede">Al frenar, el motor funciona como generador y devuelve parte de la energía de movimiento a la batería. No hay un porcentaje fijo: depende de la velocidad, el peso y cuántas veces se frena.</p>
-  <div class="grid-calc">
-    <div class="panel">
-      <div class="field"><div class="lab">Versión</div>${versionSeg()}</div>
-      <h3 style="margin-top:6px">Una frenada</h3>
-      ${range("speed","Velocidad antes de frenar",10,130,5," km/h")}
-      ${range("eff","Eficiencia de recuperación",40,80,5,"%","Fracción de la energía de movimiento que vuelve a la batería. 60–70% es un valor típico.")}
-      <h3 style="margin-top:20px">Un trayecto en ciudad</h3>
-      ${range("tripKm","Largo del trayecto",2,80,1," km")}
-      ${range("stops","Detenciones completas",0,120,1,"")}
-      ${range("stopSpeed","Velocidad típica entre detenciones",20,80,5," km/h")}
-    </div>
-    <div class="panel result" id="res"></div>
-  </div>
-  <div class="grid2" style="margin-top:20px">
-    <div class="panel"><h3>Conducción con un pedal</h3><p style="margin:0">Tres niveles: Off, sin retención al soltar; Low, regeneración moderada; y Alto, frenado más intenso. Se guarda en el perfil del conductor. Es lo que más cambia la experiencia de manejo: mostrarlo en la prueba.</p></div>
-    <div class="panel"><h3>Cómo explicarlo</h3><p style="margin:0">En carretera casi no se frena, así que la regeneración aporta poco. En ciudad, con muchas detenciones, devuelve una parte importante de lo gastado: por eso un eléctrico rinde más en ciudad que en autopista, al revés que un auto a bencina.</p></div>
-  </div>`;
-function renderRegenResult(){
-  const v=ver(), el=document.getElementById("res"); if(!el) return;
-  const m=v.mass+80, eff=S.eff/100;
-  const ke=(sp)=>0.5*m*Math.pow(sp/3.6,2)/3600; // Wh
-  const one=ke(S.speed)*eff, pct=one/(v.net*1000)*100, meters=one/(v.cons*10)*1000;
-  const tripWh=S.tripKm*v.cons*0.86*10, rec=Math.min(ke(S.stopSpeed)*eff*S.stops, tripWh*0.35), share=rec/(tripWh)*100;
-  el.innerHTML = `<span class="est">Cálculo físico aproximado</span>
-    <div class="big">${fmt(share)}%</div><div class="big-label">de la energía del trayecto se recupera frenando</div>
-    <dl class="kv">
-      <dt>Energía del trayecto</dt><dd>${fmt(tripWh/1000,2)} kWh</dd>
-      <dt>Recuperado en ${S.stops} detenciones</dt><dd>${fmt(rec/1000,2)} kWh</dd>
-      <dt>Autonomía devuelta</dt><dd>~${fmt(rec/(v.cons*10),1)} km</dd>
-    </dl>
-    <h3 style="margin-top:22px">Una frenada desde ${S.speed} km/h</h3>
-    <dl class="kv">
-      <dt>Energía recuperada</dt><dd>~${fmt(one)} Wh</dd>
-      <dt>Porcentaje de batería</dt><dd>~${fmt(pct,2)}%</dd>
-      <dt>Equivale a</dt><dd>~${fmt(meters)} m de autonomía</dd>
-    </dl>
-    <p class="hint">Masa ${fmt(m)} kg (auto + conductor). La energía de movimiento crece con el cuadrado de la velocidad: frenar desde 100 km/h devuelve casi el triple que desde 60. El cálculo omite pérdidas por roce y aire durante la frenada, y limita lo recuperado a 35% del trayecto.</p>`;
-}
-
 views.campana = () => `
-  <h1>Campaña de seguridad de batería</h1>
-  <p class="lede">EX30 E60 (batería 69 kWh) comercializados en 2024 y 2025. El Core E40 queda fuera.</p>
+  <h1>${CAMP.titulo}</h1>
+  <p class="lede">${CAMP.alcance}</p>
   <div class="grid2">
     <div class="panel">
-      <ul class="list">
-        <li><span>Código SERNAC</span><b>26129V01</b></li>
-        <li><span>Informante</span><b>Ditec Automóviles S.A.</b></li>
-        <li><span>Unidades en Chile</span><b>472</b></li>
-        <li><span>Accidentes en Chile</span><b>Ninguno registrado</b></li>
-        <li><span>Reparación</span><b>Desde octubre 2026</b></li>
-        <li><span>Qué se hace</span><b>Reemplazo de módulos, ~2 días, sin costo</b></li>
-        <li><span>Mientras tanto</span><b>Limitar carga al 70%</b></li>
-        <li><span>Contacto</span><b>contactovolvo@volvocarschile.cl</b></li>
-      </ul>
-      <p style="margin-top:14px"><a href="https://www.sernac.cl/portal/619/w3-article-89013.html" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Abrir alerta de SERNAC y verificar VIN</a></p>
+      <ul class="list">${CAMP.datos.map(([k,v])=>`<li><span>${k}</span><b>${v}</b></li>`).join("")}</ul>
+      <p style="margin-top:14px"><a href="${CAMP.enlace}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Abrir alerta de SERNAC y verificar VIN</a></p>
     </div>
     <div>
-      <div class="panel"><h3>Qué pasó</h3><p style="margin:0">Algunas celdas de un proveedor específico podrían sobrecalentarse con carga alta. Volvo lo detectó, lo informó al regulador y repara a su costo. El límite al 70% se configura en Configuración → Carga → Nivel objetivo, o desde la app Volvo Cars.</p></div>
+      <div class="panel"><h3>Qué pasó</h3><p style="margin:0">${CAMP.quePaso}</p></div>
       <div class="note internal"><span class="internal-tag">Solo para ti · cómo manejarlo</span>
-        <p>No minimizar. Verificar el VIN en el momento, no después.</p>
-        <p>Dar plazos concretos; si no se saben, comprometer una fecha de respuesta.</p>
-        <p>Hacerse cargo del seguimiento. Seguros y compensaciones: escalar a postventa o al gerente.</p>
-        <p>No usar la exclusión del Core como argumento de venta oportunista.</p>
+        ${CAMP.manejo.map(n=>`<p>${n}</p>`).join("")}
       </div>
     </div>
   </div>
-  <p class="hint" style="margin-top:18px">Estado según el dossier al ${DATA_DATE}. Revisar novedades antes de atender a un dueño.</p>`;
+  <p class="hint" style="margin-top:18px">Estado al ${DATA_DATE}. Revisar novedades antes de atender a un dueño.</p>`;
 
 /* ---------- Render y eventos ---------- */
-const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult,regeneracion:renderRegenResult};
+const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult};
+document.getElementById("stamp").textContent = `Datos al ${DATA_DATE}. Precios y tarifas: verificar antes de cotizar.`;
 function route(){ const h=(location.hash||"").slice(1); return views[h]?h:"gama"; }
 function render(){
   const r=route(), main=document.getElementById("view");
