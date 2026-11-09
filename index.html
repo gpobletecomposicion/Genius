@@ -207,10 +207,8 @@ body.is-offline .offline-chip{display:block}
 <script>
 /* ---------- Datos: vienen de modelos.js ---------- */
 const DATA_DATE = GENIUS_DATA.fecha;
-const M = GENIUS_DATA.modelos.ex30;
-const V = M.versiones;
-const ORDER = M.orden;
-const EQUIP = M.equipamiento;
+const MODELS = GENIUS_DATA.modelos;
+let M, V, ORDER, EQUIP;
 const RANGE = GENIUS_DATA.gama;
 const CAMP = GENIUS_DATA.campana;
 const fromPrice = id => Math.min(...Object.values(GENIUS_DATA.modelos[id].versiones).map(v=>v.price));
@@ -218,7 +216,7 @@ const COND = {ciudad:{label:"Ciudad",f:0.86},mixto:{label:"Mixto",f:1},autopista
 
 /* ---------- Estado (guardado en este navegador) ---------- */
 const DEFAULTS = {
-  version:"plus", client:false,
+  model:"ex30", version:"plus", client:false,
   kmDay:40, daysWeek:6, cond:"mixto", cold:false, homeShare:80,
   tHome:250, tPublic:400, fuel:1550, kmL:12,
   years:5, kmYear:15000, priceIce:32000000, maintEv:200000, maintIce:450000,
@@ -229,18 +227,34 @@ const DEFAULTS = {
 let S;
 try{ S = Object.assign({},DEFAULTS, JSON.parse(localStorage.getItem("genius-state")||"{}")); }catch(e){ S = {...DEFAULTS}; }
 function save(){ try{ localStorage.setItem("genius-state",JSON.stringify(S)); }catch(e){} }
+/* Modelo activo: lo eligen la Gama, la ficha o el selector de las calculadoras. Cada modelo recuerda su versión. */
+function setModel(id){
+  if(!MODELS[id]) id="ex30";
+  if(S.model && V && V[S.version]){ S.verByModel = Object.assign({},S.verByModel,{[S.model]:S.version}); }
+  S.model=id; M=MODELS[id]; V=M.versiones; ORDER=M.orden; EQUIP=M.equipamiento;
+  const keep=(S.verByModel||{})[id];
+  S.version = V[keep] ? keep : (V[S.version] ? S.version : ORDER[0]);
+}
+setModel(S.model);
 
 const clp = n => "$" + Math.round(n).toLocaleString("es-CL");
 const fmt = (n,d=0) => Number(n).toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d});
 const ver = () => V[S.version];
+const dcText = v => v.dc ? v.dc+" kW" : "Por confirmar";
 const consOf = (v) => v.cons * COND[S.cond].f * (S.cold ? 1.2 : 1); // kWh/100 km
 
 /* ---------- Navegación ---------- */
 const ROUTES = [
-  ["gama","Gama"],["ex30","EX30"],["comparar","Comparar versiones"],["energia","Costo de energía"],
+  ["gama","Gama"],["ficha","Ficha"],["comparar","Comparar versiones"],["energia","Costo de energía"],
   ["costo-total","Costo total"],["carga","Tiempo de carga"],["autonomia","Autonomía real"],["campana","Campaña de batería"]
 ];
-function navHTML(cur){ return ROUTES.map(([id,l])=>`<a href="#${id}" ${id===cur?'aria-current="page"':''}>${l}</a>`).join(""); }
+function navHTML(cur){ return ROUTES.map(([id,l])=> id==="ficha"
+  ? `<a href="#${S.model}" ${MODELS[cur]?'aria-current="page"':''}>${M.nombre}</a>`
+  : `<a href="#${id}" ${id===cur?'aria-current="page"':''}>${l}</a>`).join(""); }
+
+function modelSeg(){
+  return `<div class="seg" role="group" aria-label="Modelo" style="margin-bottom:8px">${Object.keys(MODELS).map(k=>`<button data-model="${k}" aria-pressed="${S.model===k}">${MODELS[k].nombre}</button>`).join("")}</div>`;
+}
 
 function versionSeg(){
   return `<div class="seg" role="group" aria-label="Versión">${ORDER.map(k=>`<button data-ver="${k}" aria-pressed="${S.version===k}">${V[k].name}</button>`).join("")}</div>`;
@@ -266,9 +280,9 @@ const views = {};
 
 views.gama = () => `
   <h1>Gama Volvo Chile</h1>
-  <p class="lede">Toca un modelo para ver versiones, ficha y argumentos. El EX30 está completo; el resto se suma desde tus dossiers.</p>
+  <p class="lede">Toca un modelo para ver versiones, ficha y argumentos. El resto de la gama se suma desde tus dossiers.</p>
   <div class="range-grid">
-    ${RANGE.map(m=> m.modelo && views[m.modelo]
+    ${RANGE.map(m=> m.modelo && MODELS[m.modelo]
       ? `<a class="car live" href="#${m.modelo}"><div class="name">${m.nombre}</div><div class="what">${m.tipo}</div><div class="from">Desde ${clp(fromPrice(m.modelo))}</div></a>`
       : `<div class="car soon"><div class="name">${m.nombre}</div><div class="what">${m.tipo}</div><span class="chip">Próxima versión</span></div>`).join("")}
   </div>
@@ -280,12 +294,12 @@ views.gama = () => `
     <a class="car" href="#autonomia"><div class="name" style="font-size:1.25rem">Autonomía real</div><div class="what">Kilómetros entre cargas según uso, clima y límite de carga.</div></a>
   </div>`;
 
-views.ex30 = () => {
+const fichaView = () => {
   const v = ver();
   const eq = `<ul class="list">${EQUIP.map(r=>`<li><span>${r.item}</span><b>${r[v.id]}</b></li>`).join("")}</ul>`;
   return `
   <div class="model-head">
-    <div><h1>EX30 ${v.name}</h1><p class="lede" style="margin:0">${v.drive} · batería ${v.gross} kWh ${v.chem}</p></div>
+    <div><h1>${M.nombre} ${v.name}</h1><p class="lede" style="margin:0">${v.drive} · batería ${v.gross} kWh ${v.chem}</p></div>
     <div class="price">${clp(v.price)}<small>Precio con financiamiento y bonos, incluye IVA</small></div>
   </div>
   ${versionSeg()}
@@ -304,7 +318,7 @@ views.ex30 = () => {
         <li><span>Motores</span><b>${v.motors}</b></li>
         <li><span>Tracción</span><b>${v.traction}</b></li>
         <li><span>Autonomía realista (mixto)</span><b>${v.real} km</b></li>
-        <li><span>Carga DC máxima</span><b>${v.dc?v.dc+" kW":"No informada"}</b></li>
+        <li><span>Carga DC máxima</span><b>${dcText(v)}</b></li>
         ${v.dc50?`<li><span>Carga 10–80% con 50 kW</span><b>~${v.dc50} min</b></li>`:""}
         <li><span>Bomba de calor</span><b>${M.bombaCalor}</b></li>
         <li><span>Carga AC máxima</span><b>${v.ac} kW</b></li>
@@ -330,18 +344,19 @@ views.comparar = () => {
   const rows = [
     ["Precio desde",v=>clp(v.price)],["Código",v=>v.code],["Batería",v=>`${v.gross} kWh ${v.chem}`],["Motores",v=>v.motors],
     ["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],["Tracción",v=>v.traction],["0–100 km/h",v=>`${fmt(v.acc,1)} s`],
-    ["Autonomía WLTP",v=>`${v.wltp} km`],["Autonomía realista",v=>`${v.real} km`],["Carga DC máx.",v=>v.dc?`${v.dc} kW`:"No informada"],
+    ["Autonomía WLTP",v=>`${v.wltp} km`],["Autonomía realista",v=>`${v.real} km`],["Carga DC máx.",v=>dcText(v)],
     ["Carga DC 10–80%",v=>`~${v.dc1080} min`],["Carga diaria",v=>v.daily],["Llantas",v=>v.wheels]
   ];
   const line = (label,vals) => { const diff = new Set(vals).size>1; return `<tr class="${diff?"diff":""}"><th scope="row">${label}</th>${vals.map(x=>`<td>${x}</td>`).join("")}</tr>`; };
   return `
-  <h1>Comparar versiones</h1>
-  <p class="lede">Las filas marcadas son las que cambian entre versiones. Core, Plus y Ultra tienen el mismo motor: se sube de versión por batería y equipamiento, nunca por potencia.</p>
+  <h1>Comparar versiones ${M.nombre}</h1>
+  <p class="lede">${M.compararLede||"Las filas marcadas son las que cambian entre versiones."}</p>
+  ${modelSeg()}
   <div class="table-wrap"><table>
     <thead><tr><th></th>${ORDER.map(k=>`<th>${V[k].name}</th>`).join("")}</tr></thead>
     <tbody>
       ${rows.map(([l,f])=>line(l,ORDER.map(k=>f(V[k])))).join("")}
-      <tr class="group"><th colspan="5">Equipamiento</th></tr>
+      <tr class="group"><th colspan="${ORDER.length+1}">Equipamiento</th></tr>
       ${EQUIP.map(r=>line(r.item,ORDER.map(k=>r[k]))).join("")}
     </tbody>
   </table></div>
@@ -363,10 +378,10 @@ function energyCalc(){
 
 views.energia = () => `
   <h1>Costo de energía</h1>
-  <p class="lede">Cuánto cuesta mover el EX30 frente a un auto a bencina, con los hábitos del cliente.</p>
+  <p class="lede">Cuánto cuesta mover el ${M.nombre} frente a un auto a bencina, con los hábitos del cliente.</p>
   <div class="grid-calc">
     <div class="panel">
-      <div class="field"><div class="lab">Versión</div>${versionSeg()}</div>
+      <div class="field"><div class="lab">Modelo y versión</div>${modelSeg()}${versionSeg()}</div>
       ${range("kmDay","Kilómetros por día",5,200,5," km")}
       ${range("daysWeek","Días de uso por semana",1,7,1," días")}
       <div class="field"><div class="lab">Tipo de uso</div>${seg("cond",Object.entries(COND).map(([k,o])=>[k,o.label]),S.cond)}</div>
@@ -383,7 +398,7 @@ function renderEnergyResult(){
   el.innerHTML = `<span class="est">Estimación</span>
     <div class="big">${clp(Math.max(save,0)*12)}</div><div class="big-label">${save>=0?"de ahorro al año frente a bencina":"más caro al año que la bencina"}</div>
     <div class="bars">
-      ${bar("EX30 "+ver().name, r.evMonth, max, clp(r.evMonth)+" / mes")}
+      ${bar(M.nombre+" "+ver().name, r.evMonth, max, clp(r.evMonth)+" / mes")}
       ${bar("Auto a bencina", r.iceMonth, max, clp(r.iceMonth)+" / mes", true)}
     </div>
     <dl class="kv">
@@ -418,14 +433,14 @@ views["costo-total"] = () => `
   <p class="lede">Compra menos valor de reventa, más energía, mantención, permiso de circulación y seguro. Usa los mismos hábitos de la calculadora de energía.</p>
   <div class="grid-calc">
     <div class="panel">
-      <div class="field"><div class="lab">Versión</div>${versionSeg()}</div>
+      <div class="field"><div class="lab">Modelo y versión</div>${modelSeg()}${versionSeg()}</div>
       ${range("years","Años de uso",1,8,1," años")}
       ${range("kmYear","Kilómetros por año",5000,40000,1000," km")}
       ${money("priceIce","Precio del auto a bencina comparado","$","","El modelo que el cliente está mirando")}
-      <div class="two">${money("maintEv","Mantención EX30 / año","$","","Pauta: "+M.mantencion.toLowerCase())}${money("maintIce","Mantención bencina / año")}</div>
-      <div class="two">${money("permEv","Permiso EX30 / año","$","","Descuento progresivo hasta 2031")}${money("permIce","Permiso bencina / año")}</div>
-      <div class="two">${money("insEv","Seguro EX30 / año")}${money("insIce","Seguro bencina / año")}</div>
-      <div class="two">${range("resEv","Reventa EX30",20,80,5,"%")}${range("resIce","Reventa bencina",20,80,5,"%")}</div>
+      <div class="two">${money("maintEv","Mantención "+M.nombre+" / año","$","","Pauta: "+M.mantencion.toLowerCase())}${money("maintIce","Mantención bencina / año")}</div>
+      <div class="two">${money("permEv","Permiso "+M.nombre+" / año","$","","Descuento progresivo hasta 2031")}${money("permIce","Permiso bencina / año")}</div>
+      <div class="two">${money("insEv","Seguro "+M.nombre+" / año")}${money("insIce","Seguro bencina / año")}</div>
+      <div class="two">${range("resEv","Reventa "+M.nombre,20,80,5,"%")}${range("resIce","Reventa bencina",20,80,5,"%")}</div>
       <p class="hint internal">Mantención, permiso, seguro y reventa vienen con valores de ejemplo. Pídele al cliente sus cotizaciones o usa la tasación SII antes de mostrar un número final. No prometas exención total de permiso: rigió hasta febrero de 2025.</p>
     </div>
     <div class="panel result" id="res"></div>
@@ -436,12 +451,12 @@ function renderTcoResult(){
   const parts = [["buy","Compra neta de reventa"],["energy","Energía"],["maint","Mantención"],["perm","Permiso"],["ins","Seguro"]];
   el.innerHTML = `<span class="est">Estimación a ${S.years} años</span>
     <div class="big">${clp(Math.abs(diff))}</div>
-    <div class="big-label">${diff>=0?"menos cuesta el EX30 en total":"más cuesta el EX30 en total"}</div>
-    <div class="bars">${bar("EX30 "+ver().name,r.tEv,max,clp(r.tEv))}${bar("Auto a bencina",r.tIce,max,clp(r.tIce),true)}</div>
+    <div class="big-label">${diff>=0?`menos cuesta el ${M.nombre} en total`:`más cuesta el ${M.nombre} en total`}</div>
+    <div class="bars">${bar(M.nombre+" "+ver().name,r.tEv,max,clp(r.tEv))}${bar("Auto a bencina",r.tIce,max,clp(r.tIce),true)}</div>
     ${chart(r)}
-    <p class="hint" style="margin-top:6px">${r.cross===null?"En este escenario las curvas no se cruzan dentro del plazo.":r.cross===0?"El EX30 parte más barato y se mantiene así.":`El gasto acumulado del EX30 queda por debajo desde el año ${fmt(r.cross,1)}.`} El gráfico no incluye la reventa.</p>
+    <p class="hint" style="margin-top:6px">${r.cross===null?"En este escenario las curvas no se cruzan dentro del plazo.":r.cross===0?`El ${M.nombre} parte más barato y se mantiene así.`:`El gasto acumulado del ${M.nombre} queda por debajo desde el año ${fmt(r.cross,1)}.`} El gráfico no incluye la reventa.</p>
     <dl class="kv">${parts.map(([k,l])=>`<dt>${l}</dt><dd>${clp(r.ev[k])} · ${clp(r.ice[k])}</dd>`).join("")}</dl>
-    <p class="hint">Columna izquierda: EX30. Derecha: bencina.</p>`;
+    <p class="hint">Columna izquierda: ${M.nombre}. Derecha: bencina.</p>`;
 }
 function chart(r){
   const W=460,H=190,p={l:8,r:8,t:12,b:24}, n=r.cumEv.length-1;
@@ -452,7 +467,7 @@ function chart(r){
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Gasto acumulado por año">
     <path d="${path(r.cumIce)}" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"/>
     <path d="${path(r.cumEv)}" fill="none" stroke="var(--accent)" stroke-width="3.5"/>${ticks}</svg>
-    <div class="legend"><span><i style="background:var(--accent)"></i>EX30 acumulado</span><span><i style="background:var(--muted)"></i>Bencina acumulado</span><span>Eje: años</span></div>`;
+    <div class="legend"><span><i style="background:var(--accent)"></i>${M.nombre} acumulado</span><span><i style="background:var(--muted)"></i>Bencina acumulado</span><span>Eje: años</span></div>`;
 }
 
 const CHARGERS = {
@@ -479,7 +494,7 @@ views.carga = () => `
   <p class="lede">Del porcentaje actual al objetivo. El cargador a bordo acepta hasta 11 kW en AC: en un punto de 22 kW igual toma 11.</p>
   <div class="grid-calc">
     <div class="panel">
-      <div class="field"><div class="lab">Versión</div>${versionSeg()}</div>
+      <div class="field"><div class="lab">Modelo y versión</div>${modelSeg()}${versionSeg()}</div>
       <div class="field"><div class="lab">Dónde carga</div>${seg("charger",Object.entries(CHARGERS).map(([k,c])=>[k,c.label]),S.charger)}</div>
       ${range("from","Batería al llegar",0,95,5,"%")}
       ${range("to","Cargar hasta",10,100,5,"%")}
@@ -506,10 +521,10 @@ views.autonomia = () => `
   <p class="lede">La cifra WLTP promedia ciudad y carretera. Aquí se ajusta al uso del cliente, con el mismo consumo que la calculadora de energía.</p>
   <div class="grid-calc">
     <div class="panel">
-      <div class="field"><div class="lab">Versión</div>${versionSeg()}</div>
+      <div class="field"><div class="lab">Modelo y versión</div>${modelSeg()}${versionSeg()}</div>
       <div class="field"><div class="lab">Tipo de uso</div>${seg("cond",Object.entries(COND).map(([k,o])=>[k,o.label]),S.cond)}</div>
       <div class="field"><div class="lab">Clima</div>${seg("cold",[[false,"Templado"],[true,"Frío (invierno)"]],S.cold)}</div>
-      <div class="field"><div class="lab">Carga hasta</div>${seg("limit",[[100,"100%"],[90,"90%"],[80,"80%"],[70,"70% (campaña)"]],S.limit)}</div>
+      <div class="field"><div class="lab">Carga hasta</div>${seg("limit",[[100,"100%"],[90,"90%"],[80,"80%"],[70,M.campana70?"70% (campaña)":"70%"]],S.limit)}</div>
       <div class="field"><div class="lab">Reserva</div>${seg("reserve",[[true,"Recargar al 20%"],[false,"Hasta 0%"]],S.reserve)}</div>
     </div>
     <div class="panel result" id="res"></div>
@@ -523,7 +538,7 @@ function renderRangeResult(){
     <div class="bars">${bar("WLTP oficial",v.wltp,v.wltp,v.wltp+" km",true)}${bar("Batería completa, este uso",full,v.wltp,fmt(full)+" km")}${bar("Entre cargas",km,v.wltp,fmt(km)+" km")}</div>
     <dl class="kv"><dt>Consumo usado</dt><dd>${fmt(cons,1)} kWh/100 km</dd><dt>Energía utilizable</dt><dd>${fmt(usable,1)} kWh</dd><dt>Días de uso con ${S.kmDay} km diarios</dt><dd>${fmt(km/S.kmDay,1)}</dd></dl>
     <p class="hint">67% de los dueños chilenos recorre menos de 50 km al día (estudio Cadem–Volvo 2025).</p>
-    ${S.limit===70?`<div class="note warn internal"><p>Con el límite preventivo de la campaña, un Plus o Ultra rinde menos que un Core. Si un dueño reclama autonomía, conecta su reclamo con la campaña.</p></div>`:""}`;
+    ${S.limit===70&&M.campana70?`<div class="note warn internal"><p>Con el límite preventivo de la campaña, un Plus o Ultra rinde menos que un Core. Si un dueño reclama autonomía, conecta su reclamo con la campaña.</p></div>`:""}`;
 }
 
 views.campana = () => `
@@ -546,12 +561,13 @@ views.campana = () => `
 /* ---------- Render y eventos ---------- */
 const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult};
 document.getElementById("stamp").textContent = `Datos al ${DATA_DATE}. Precios y tarifas: verificar antes de cotizar.`;
-function route(){ const h=(location.hash||"").slice(1); return views[h]?h:"gama"; }
+function route(){ const h=(location.hash||"").slice(1); if(MODELS[h]) return h; return views[h]?h:"gama"; }
 function render(){
   const r=route(), main=document.getElementById("view");
+  if(MODELS[r] && r!==S.model){ setModel(r); save(); }
   document.getElementById("navlinks").innerHTML=navHTML(r);
   document.getElementById("mobilenav").innerHTML=navHTML(r);
-  main.innerHTML = `<div class="mobile-top"><b>Genius</b><div class="toggle" role="switch" tabindex="0" aria-checked="${S.client}" data-client-toggle>Modo cliente <span class="switch"></span></div></div>` + views[r]();
+  main.innerHTML = `<div class="mobile-top"><b>Genius</b><div class="toggle" role="switch" tabindex="0" aria-checked="${S.client}" data-client-toggle>Modo cliente <span class="switch"></span></div></div>` + (MODELS[r] ? fichaView() : views[r]());
   document.querySelectorAll("[data-client-toggle]").forEach(t=>t.setAttribute("aria-checked",S.client));
   document.body.classList.toggle("client",S.client);
   AFTER[r] && AFTER[r]();
@@ -559,6 +575,8 @@ function render(){
 function refreshResult(){ const f=AFTER[route()]; f&&f(); }
 
 document.addEventListener("click",e=>{
+  const mb=e.target.closest("[data-model]");
+  if(mb){ setModel(mb.dataset.model); save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   const vb=e.target.closest("[data-ver]");
   if(vb){ S.version=vb.dataset.ver; save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   const sb=e.target.closest("[data-set]");

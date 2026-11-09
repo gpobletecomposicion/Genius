@@ -1,5 +1,5 @@
 // Genius: funciona sin conexión. Sube VERSION cada vez que publiques cambios.
-const VERSION = "genius-v3";
+const VERSION = "genius-v4";
 const FILES = [
   "./", "./index.html", "./modelos.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png",
