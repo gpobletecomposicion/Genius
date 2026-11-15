@@ -10,7 +10,7 @@ const GENIUS_DATA = {
     {nombre:"EX30", tipo:"SUV compacto 100% eléctrico", modelo:"ex30"},
     {nombre:"EX40", tipo:"SUV 100% eléctrico", modelo:"ex40"},
     {nombre:"EC40", tipo:"SUV coupé 100% eléctrico", modelo:"ec40"},
-    {nombre:"EX90", tipo:"SUV de 7 plazas 100% eléctrico"},
+    {nombre:"EX90", tipo:"SUV de 7 plazas 100% eléctrico", modelo:"ex90"},
     {nombre:"XC40", tipo:"Mild hybrid"},
     {nombre:"XC60", tipo:"Híbrido enchufable T8 AWD"},
     {nombre:"XC90", tipo:"Híbrido enchufable de 7 plazas"}
@@ -177,7 +177,67 @@ const GENIUS_DATA = {
         "Carga DC máxima en kW: Por confirmar. Qué decir: entre 27 y 40 min de 10 a 80%, según cargador y temperatura.",
         "Autonomía realista: estimación del dossier (15% a 30% bajo WLTP), no dato oficial."
       ]
+    },
+
+    /* ---------- EX90 ----------
+       Fuente: Dossier EX90 (ficha técnica Inchcape oct 2026, volvocars.com/cl, volvohomestore.cl, homologación MTT).
+       Stock chileno: año modelo 2025, 400 V, confirmado por Volvo Chile. Las cifras de 800 V (año modelo 2026–2027) no aplican.
+       Precio: el publicado en volvohomestore.cl con bono de marca y de financiamiento, IVA incluido. Precio lista: Por confirmar.
+       net: 107 kWh útiles informados por la prensa (SAE Mobility Engineering); Volvo publica 111 kWh nominales.
+       cons: kWh/100 km de uso mixto realista = batería útil ÷ punto medio de la autonomía realista (107 ÷ 465 km).
+       No es el rendimiento MTT (16,1 y 16,9 kWh/100 km, de laboratorio). Calza con km77 (~24 kWh/100 km en ciudad y autovía).
+       dc: 250 kW, la potencia con que volvocars.com/cl publica los 30 min de 10–80%. dc50 null = Por confirmar. */
+    ex90: {
+      nombre: "EX90",
+      fuente: "Ficha técnica Inchcape (oct 2026), volvocars.com/cl y precios de volvohomestore.cl",
+      compararLede: "Las filas marcadas son las que cambian. Las dos versiones comparten batería, carga, carrocería, siete plazas y toda la seguridad: la Ultra Performance suma 109 hp y confort de marcha.",
+      orden: ["plus","ultra"],
+      versiones: {
+        plus:{id:"plus",name:"Plus",code:"Por confirmar",drive:"Twin Motor",price:99900000,gross:111,net:107,chem:"NMC",motors:"2 (delantero + trasero; potencia por eje por confirmar)",kw:300,hp:408,nm:770,traction:"Integral",acc:5.9,vmax:180,wltp:600,real:"420–510",dc:250,dc1080:30,dc50:null,ac:11,wheels:'21" 8 radios',cons:23.0,mass:2780,daily:"Hasta 90%",recall:false,
+          fit:"Familia de cinco a siete personas que quiere dejar la combustión, o dueño de XC90 que valora la seguridad por sobre todo. Ya trae head-up display, cámara 360°, Pilot Assist y las siete plazas.",
+          notes:["Precio publicado con bono de marca y de financiamiento, stock limitado. Precio lista: por confirmar.","El precio publicado bajó $14 millones desde el lanzamiento (abr 2025): es stock año modelo 2025 que se está rotando.","Faros y vidrios: la ficha Inchcape dice HD Pixel y laminados; volvocars.com/cl dice LED y templados. Manda la ficha, pero verificar en la unidad.","Volante calefaccionado y calefacción trasera: de serie según la ficha Inchcape, opcionales según la web. Verificar antes de prometerlos.","No trae rueda de repuesto: kit con compresor y sellante, máximo 80 km/h y 200 km. Decirlo a quien viaja al sur o por ripio."]},
+        ultra:{id:"ultra",name:"Ultra Performance",code:"Por confirmar",drive:"Twin Motor Performance",price:109900000,gross:111,net:107,chem:"NMC",motors:"2 (delantero + trasero; potencia por eje por confirmar)",kw:380,hp:517,nm:910,traction:"Integral",acc:4.9,vmax:180,wltp:600,real:"420–510",dc:250,dc1080:30,dc50:null,ac:11,wheels:'22" 5 radios',cons:23.0,mass:2787,daily:"Hasta 90%",recall:false,
+          fit:"Prioriza el confort de marcha y el lujo: suspensión neumática con chasis activo, masaje, cierre suave de puertas y Bowers & Wilkins de 25 parlantes. Los 109 hp extra se notan al adelantar, no en velocidad máxima.",
+          notes:["Precio publicado con bonos, stock limitado. Bajó $19 millones desde el lanzamiento (abr 2025). Precio lista: por confirmar.","En la prueba, cambiar los ajustes de suspensión en un tramo irregular para que el cliente note la neumática.","Llantas 22\": restan algo de autonomía y los neumáticos son más caros. Delanteras y traseras no se intercambian.","No trae rueda de repuesto: kit con compresor y sellante, máximo 80 km/h y 200 km."]}
+      },
+      equipamiento: [
+        {item:"Suspensión",                           plus:"Amortiguadores convencionales",            ultra:"Neumática activa de doble cámara, con chasis activo"},
+        {item:"Faros",                                plus:"HD Pixel según ficha Inchcape (la web dice LED)", ultra:"HD Pixel, 1,3 millones de píxeles"},
+        {item:"Lavafaros",                            plus:"Opcional",                                 ultra:"Sí"},
+        {item:"Audio",                                plus:"Bose, 14 parlantes",                       ultra:"Bowers & Wilkins, 25 parlantes, Dolby Atmos, 1.610 W"},
+        {item:"Masaje en asientos delanteros",        plus:"—",                                        ultra:"Sí, 10 puntos y 5 programas"},
+        {item:"Soporte lateral eléctrico",            plus:"—",                                        ultra:"Sí"},
+        {item:"Cierre suave de puertas",              plus:"—",                                        ultra:"Sí"},
+        {item:"Vidrios laterales y trasero",          plus:"Laminados según ficha Inchcape (la web dice templados)", ultra:"Laminados"},
+        {item:"Manillas",                             plus:"Color carrocería",                         ultra:"Integradas, desplegables, con luz al piso"},
+        {item:"Head-up display",                      plus:"Sí",                                       ultra:"Sí"},
+        {item:"Cámara 360° con vista 3D y Park Pilot Assist", plus:"Sí",                              ultra:"Sí"},
+        {item:"Pilot Assist (hasta 150 km/h)",        plus:"Sí",                                       ultra:"Sí"},
+        {item:"Climatizador",                         plus:"4 zonas, más aire propio en 3.ª fila",     ultra:"4 zonas, más aire propio en 3.ª fila"},
+        {item:"Asientos delanteros y de 2.ª fila calefaccionados", plus:"Sí (ficha Inchcape; la web dice opcional atrás)", ultra:"Sí (ficha Inchcape; la web dice opcional atrás)"},
+        {item:"Volante calefaccionado",               plus:"Sí (ficha Inchcape; la web dice opcional)", ultra:"Sí (ficha Inchcape; la web dice opcional)"},
+        {item:"Techo panorámico (fijo)",              plus:"Sí",                                       ultra:"Sí"},
+        {item:"Portón eléctrico con apertura por pie",plus:"Sí",                                       ultra:"Sí"}
+      ],
+      pasos: [
+        {de:"plus", a:"ultra", texto:"109 hp más y 0–100 en 4,9 s, suspensión neumática con chasis activo, llantas 22\", masaje y soporte lateral eléctrico, cierre suave de puertas, lavafaros y Bowers & Wilkins en vez de Bose. Si su prioridad es el confort de marcha, se nota; si no, la Plus ya trae toda la seguridad."}
+      ],
+      comunes: "SUV de siete plazas reales: la tercera fila acepta dos personas de hasta 1,70 m, con aire propio. Cinco estrellas Euro NCAP 2025, comprensión del conductor y detección de ocupantes. Pantalla central de 14,5\" y del conductor de 9\", Google integrado y Apple CarPlay inalámbrico, llave digital y tarjeta NFC. Maletero 324 l con siete plazas, 697 l con cinco y frunk de 46 l. Remolque con freno 2.200 kg. Mide 5,04 m de largo y 2,11 m de ancho con espejos. Bomba de calor de serie. Sin rueda de repuesto: kit de reparación.",
+      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica. Umbral de capacidad: Por confirmar.",
+      mantencion: "Cada 30.000 km o 3 años, lo que ocurra primero.",
+      bombaCalor: "De serie",
+      notasInternas: [
+        "Año modelo: el stock chileno es 2025, de 400 V y 111 kWh (confirmado por Volvo Chile). El 2026 de 800 V, sin LiDAR, no llegará a Chile. Decirlo de frente.",
+        "Si el cliente trae 680 hp o carga en 22 min: es la versión de 800 V de otros mercados, no aplica.",
+        "LiDAR: la web chilena lo marca de serie, pero puede no corresponder al auto en stock. Mirar sobre el parabrisas antes de nombrarlo.",
+        "Software: no negar los problemas del lanzamiento; explicar que se corrigen por actualizaciones remotas. No prometer el cambio gratuito de computador central hasta que Volvo Chile lo confirme.",
+        "Autonomía: decir \"hasta 600 km WLTP\" (ficha Inchcape); volvocars.com/cl publica 570 km. Realista 420–510 km, menos en frío: darla por escrito antes de cerrar.",
+        "Carga: unos 30 min de 10 a 80% en cargador de alta potencia, con la batería preacondicionada. Con 50 kW: Por confirmar.",
+        "Carga en casa: la web publica 15 h de 0 a 100% con wallbox de 7,2 kW. La calculadora de la app descuenta pérdidas y da más: usar la cifra de la web como dato oficial.",
+        "Precio lista y códigos de versión: Por confirmar con Inchcape. No hay alertas del EX90 en SERNAC en lo revisado; verificar el VIN igual."
+      ]
     }
+
   },
 
   campana: {
