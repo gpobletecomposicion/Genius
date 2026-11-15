@@ -12,8 +12,8 @@ const GENIUS_DATA = {
     {nombre:"EC40", tipo:"SUV coupé 100% eléctrico", modelo:"ec40"},
     {nombre:"EX90", tipo:"SUV de 7 plazas 100% eléctrico", modelo:"ex90"},
     {nombre:"XC40", tipo:"SUV compacto mild hybrid, a bencina", modelo:"xc40"},
-    {nombre:"XC60", tipo:"Híbrido enchufable T8 AWD"},
-    {nombre:"XC90", tipo:"Híbrido enchufable de 7 plazas"}
+    {nombre:"XC60", tipo:"SUV mediano híbrido enchufable T8 AWD", modelo:"xc60"},
+    {nombre:"XC90", tipo:"SUV de 7 plazas híbrido enchufable T8 AWD", modelo:"xc90"}
   ],
 
   modelos: {
@@ -290,6 +290,135 @@ const GENIUS_DATA = {
         "Rendimiento: la homologación MTT visible es de B4 Plus y Ultimate anteriores. Confirmar si hay una nueva del MY27. Gasto anual MTT: $1.167.883.",
         "La campaña 26112V01 (junio 2026) es del XC40 T5 enchufable 2021, no del mild hybrid. Verificar el VIN igual.",
         "Euro NCAP: decir \"5 estrellas en su prueba de 2018\", no \"5 estrellas vigentes\"."
+      ]
+    },
+
+    /* ---------- Híbridos enchufables T8 (XC60 y XC90) ----------
+       propulsion "phev": ficha, comparador, costo total y calculadora "Híbrido enchufable";
+       fuera de las calculadoras de energía, carga y autonomía de los eléctricos.
+       Precios: solo los publicados en volvohomestore.cl (14-10-2026), con bonos, IVA incluido, sin impuesto verde.
+       Versiones sin precio publicado (XC60 Plus y Polestar Engineered, XC90 Ultra Dark) no se muestran: van en notas internas.
+       hp/kW/Nm: 455 hp (335 kW) y 709 Nm de volvocars.com/cl y del manual (228 + 107 kW); la ficha MY27 dice 406 hp y 669 Nm.
+       gross / net: batería total y utilizable en kWh. evWltp: autonomía eléctrica oficial. evReal: rango real estimado del dossier.
+       evRealDef: valor inicial del control de autonomía en la calculadora. kmLHyb: rendimiento con batería descargada, valor inicial.
+       mttKmL / mttKmKwh: rendimiento homologado MTT (ponderado, supone cargar a diario).
+       acKw: potencia de carga AC que usa Volvo Chile (por confirmar). equivEv: eléctrico con el que se compara. */
+    xc60: {
+      nombre: "XC60",
+      propulsion: "phev",
+      fuente: "Dossier XC60 T8: volvocars.com/cl, volvohomestore.cl (14-10-2026), ficha Inchcape MY27 y manual",
+      compararLede: "Core y Ultra tienen el mismo tren motriz: mismo motor, batería, autonomía y seguridad, Pilot Assist incluido. Las filas marcadas son las que cambian: la Ultra compra confort, imagen y sonido.",
+      orden: ["core","ultra"],
+      evRealDef: 62,
+      kmLHyb: 12.5,
+      kmLHybNota: "Sin medición propia del XC60. Valor inicial: 12,5 km/l, medido por Motor1 en el XC90 T8 (mismo tren motriz, 215 kg más). El dossier usa 9 km/l como supuesto conservador.",
+      acKw: 3.7,
+      equivEv: {modelo:"ex40", version:"p8", nota:"EX40 P8 Ultra Twin Motor: el eléctrico AWD más cercano en tamaño. El EX60 aún no llega a Chile."},
+      versiones: {
+        core:{id:"core",name:"Core",code:"T8 AWD",drive:"T8 AWD Plug-in Hybrid",price:54900000,motor:"2.0 turbo, 4 cilindros, + motor eléctrico trasero",hybrid:"Híbrido enchufable: anda en eléctrico con batería cargada",gearbox:"Automática Geartronic de 8 velocidades",traction:"Integral (eje trasero eléctrico)",kw:335,hp:455,nm:709,acc:4.9,vmax:180,gross:18.8,net:14.9,evWltp:81,evReal:"55–70",mttKmL:72.6,mttKmKwh:4.8,tankL:71,towKg:2250,wheels:'19" o 20"',spare:"No, kit de reparación",mass:"2.150 kg",
+          fit:"Recorre menos de 60 km al día, puede cargar en casa o en el trabajo y viaja a regiones sin querer planificar cargas. Trae toda la seguridad, Pilot Assist y techo panorámico de serie.",
+          notes:["Precio publicado con bonos (volvohomestore.cl, 14-10-2026). Confirmar el precio del mes antes de cotizar.","Llantas 19\": la marcha más cómoda de la gama XC60.","No trae purificador de aire: lo suma desde la Plus (sin precio publicado).","Ninguna versión trae rueda de repuesto: decirlo en la entrega."]},
+        ultra:{id:"ultra",name:"Ultra",code:"T8 AWD",drive:"T8 AWD Plug-in Hybrid",price:71900000,motor:"2.0 turbo, 4 cilindros, + motor eléctrico trasero",hybrid:"Híbrido enchufable: anda en eléctrico con batería cargada",gearbox:"Automática Geartronic de 8 velocidades",traction:"Integral (eje trasero eléctrico)",kw:335,hp:455,nm:709,acc:4.9,vmax:180,gross:18.8,net:14.9,evWltp:81,evReal:"55–70",mttKmL:72.6,mttKmKwh:4.8,tankL:71,towKg:2250,wheels:'21"',spare:"No, kit de reparación",mass:"2.150 kg (dato Core)",
+          fit:"Quiere el XC60 completo: napa ventilada, Harman Kardon, cámara 360°, head-up display y calefacción de asientos y volante. Paga $17 millones por confort e imagen, no por potencia.",
+          notes:["Precio publicado con bonos (volvohomestore.cl, 14-10-2026). Un concesionario publicó la Ultra 2026 en $65.900.000: chequear la lista del mes.","Llantas 21\": marcha más firme y neumáticos más caros. Que el cliente sienta los baches en la prueba.","Es el salto de equipamiento más caro de la gama Volvo en Chile."]}
+      },
+      /* Equipamiento por versión. "—" = no lo trae. */
+      equipamiento: [
+        {item:"Pilot Assist (hasta 130 km/h)",              core:"Sí",                 ultra:"Sí"},
+        {item:"Techo panorámico eléctrico",                 core:"Sí",                 ultra:"Sí"},
+        {item:"Tapiz",                                      core:"Nórdico",            ultra:"Cuero napa ventilado"},
+        {item:"Asientos delanteros y volante calefaccionados",core:"—",                ultra:"Sí"},
+        {item:"Cámaras de estacionamiento",                 core:"Trasera",            ultra:"360°"},
+        {item:"Audio",                                      core:"High Performance",   ultra:"Harman Kardon"},
+        {item:"Head-up display",                            core:"—",                  ultra:"Sí"},
+        {item:"Vidrios laminados",                          core:"—",                  ultra:"Sí"},
+        {item:"Purificador de aire",                        core:"—",                  ultra:"Sí"},
+        {item:"Decoración interior",                        core:"Metal Mesh",         ultra:"Madera natural"},
+        {item:"Iluminación interior",                       core:"Nivel medio",        ultra:"Nivel alto"},
+        {item:"Pomo de cambios Orrefors de cristal",        core:"—",                  ultra:"Sí"},
+        {item:"Look exterior",                              core:"Cromo",              ultra:"Cromo o Dark"}
+      ],
+      pasos: [
+        {de:"core", a:"ultra", texto:"Cuero napa ventilado, asientos y volante calefaccionados, cámara 360°, Harman Kardon, head-up display, vidrios laminados, purificador, madera natural, iluminación nivel alto, pomo Orrefors y llantas 21\". Mismo motor, batería y seguridad."}
+      ],
+      comunes: "SUV mediano híbrido enchufable sobre plataforma SPA, el Volvo más vendido de la historia. 2.0 turbo adelante y motor eléctrico atrás: la tracción integral es eléctrica, sin eje cardán. Batería de 18,8 kWh (14,9 utilizables) en el túnel central: el maletero de 468 l es el mismo de un XC60 a combustión. Carga solo en corriente alterna, conector tipo 2: 3 a 4 h en casa. Estanque de 71 l. Toda la seguridad de serie desde la Core, con alzadores integrados para niños en la segunda fila. Pantalla de 11,2\" con Google y panel de 12,3\". Remolque 2.250 kg con freno.",
+      garantia: "Batería: 5 años o 100.000 km según el libro de servicio y garantía (los 8 años o 160.000 km son de los 100% eléctricos).",
+      mantencion: "Cada 10.000 km o 1 año, lo que ocurra primero.",
+      mantKm: 10000,
+      mantMeses: 12,
+      notasInternas: [
+        "La primera pregunta: ¿tiene dónde enchufar en casa o en el trabajo? Si no, no es su auto: derivar al XC40 Mild Hybrid.",
+        "Potencia: la ficha MY27 dice 406 hp y 669 Nm; volvohomestore.cl, 462 hp. Usar 455 hp (335 kW) y ofrecer confirmarlo por escrito con Inchcape.",
+        "No carga en corriente continua: los cargadores rápidos no le sirven. Cargador a bordo: 3,7 kW según Volvo Chile (por confirmar si acepta 7,4).",
+        "Septiembre 2026: Volvo presentó el XC60 PHEV de largo alcance (41,2 kWh, 189–200 km eléctricos), sin fecha para Chile. No negarlo: vender este por probado y con descuento.",
+        "Versiones sin precio publicado: Plus y Polestar Engineered (Öhlins, 22\"). Confirmar con Inchcape si se venden hoy.",
+        "Campañas: 25088V01 (frenos BCM2, 2024–2025, OTA), 25051V01 (módulos de batería, 2020–2022) y 25022V01 (pedal de freno, 2020–2021). Verificar VIN en recallsvolvocars.cl.",
+        "Origen: por confirmar con el VIN. Decir \"diseñado y desarrollado en Suecia; te confirmo la planta de esta unidad\".",
+        "Euro NCAP: 5 estrellas en 2017 (98% adultos), referencia histórica del protocolo anterior.",
+        "Dejar por escrito la autonomía eléctrica real: 55 a 70 km, no 81."
+      ]
+    },
+
+    xc90: {
+      nombre: "XC90",
+      propulsion: "phev",
+      fuente: "Dossier XC90 T8: ficha Inchcape MY27, volvocars.com/cl y volvohomestore.cl (14-10-2026), consumovehicular.cl y manual MY26",
+      compararLede: "Core, Plus y Ultra tienen el mismo T8 AWD, batería, homologación y seguridad. Las filas marcadas son las que cambian: la Plus compra tecnología y sonido; la Ultra, suspensión neumática y lujo.",
+      orden: ["core","plus","ultra"],
+      evRealDef: 55,
+      kmLHyb: 12.5,
+      kmLHybNota: "Motor1 (Europa) midió con batería descargada ~12,5 km/l en uso mixto (8 l/100 km) y ~10 km/l en autopista (10 l/100 km).",
+      acKw: 3.7,
+      equivEv: {modelo:"ex90", version:"plus", nota:"EX90 Plus: el SUV eléctrico de 7 plazas de Volvo."},
+      versiones: {
+        core:{id:"core",name:"Core",code:"T8 AWD",drive:"T8 AWD Plug-in Hybrid",price:84900000,motor:"2.0 turbo, 4 cilindros (228 kW) + eléctrico trasero (107 kW)",hybrid:"Híbrido enchufable: anda en eléctrico con batería cargada",gearbox:"Automática Geartronic de 8 velocidades",traction:"Integral (eje trasero eléctrico)",kw:335,hp:455,nm:709,acc:5.4,vmax:180,gross:18.8,net:14.9,evWltp:73,evReal:"50–60",mttKmL:55.6,mttKmKwh:5.0,tankL:71,towKg:2400,wheels:'20" negro brillante corte diamante',spare:"Por confirmar",mass:"2.365 kg",
+          fit:"Familia de 5 a 7 que viaja a regiones y carga en casa: de lunes a viernes en eléctrico, el fin de semana sin pensar en cargadores. Seguridad completa y Pilot Assist de serie.",
+          notes:["Precio publicado con bonos (volvohomestore.cl, 14-10-2026). Confirmar el precio del mes antes de cotizar.","Cámara solo trasera con sensores: si estaciona en espacios justos, mostrar la 360° de la Plus.","El modo Off-road necesita suspensión neumática: en la Core, por confirmar."]},
+        plus:{id:"plus",name:"Plus",code:"T8 AWD",drive:"T8 AWD Plug-in Hybrid",price:91900000,motor:"2.0 turbo, 4 cilindros (228 kW) + eléctrico trasero (107 kW)",hybrid:"Híbrido enchufable: anda en eléctrico con batería cargada",gearbox:"Automática Geartronic de 8 velocidades",traction:"Integral (eje trasero eléctrico)",kw:335,hp:455,nm:709,acc:5.4,vmax:180,gross:18.8,net:14.9,evWltp:73,evReal:"50–60",mttKmL:55.6,mttKmKwh:5.0,tankL:71,towKg:2400,wheels:'21" negro corte diamante',spare:"Por confirmar",mass:"Por confirmar",
+          fit:"Quiere la tecnología completa sin el precio de la Ultra: cámara 360° con estacionamiento asistido, Harman Kardon, head-up display y purificador PM2.5.",
+          notes:["Precio publicado con bonos (volvohomestore.cl, 14-10-2026).","Head-up display: la web lo da de serie y la ficha MY27 se contradice. Verificarlo en la unidad antes de prometerlo.","Napa ventilada y almohadillas laterales eléctricas: opcionales en la Plus."]},
+        ultra:{id:"ultra",name:"Ultra",code:"T8 AWD",drive:"T8 AWD Plug-in Hybrid",price:96900000,motor:"2.0 turbo, 4 cilindros (228 kW) + eléctrico trasero (107 kW)",hybrid:"Híbrido enchufable: anda en eléctrico con batería cargada",gearbox:"Automática Geartronic de 8 velocidades",traction:"Integral (eje trasero eléctrico)",kw:335,hp:455,nm:709,acc:5.4,vmax:180,gross:18.8,net:14.9,evWltp:73,evReal:"50–60",mttKmL:55.6,mttKmKwh:5.0,tankL:71,towKg:2400,wheels:'21" negro corte diamante',spare:"Por confirmar",mass:"Por confirmar",
+          fit:"Busca el Volvo más lujoso con motor a combustión: suspensión neumática, Bowers & Wilkins de 1.460 W, napa ventilada, cortinillas y vidrios laminados.",
+          notes:["Precio publicado con bonos (volvohomestore.cl, 14-10-2026).","Con suspensión neumática: baja la parte trasera para cargar y habilita el modo Off-road. Mostrarlo con una maleta.","La Ultra también puede ser Bright (cromo). La Ultra Dark no tiene precio publicado."]}
+      },
+      /* Equipamiento por versión. "—" = no lo trae. */
+      equipamiento: [
+        {item:"7 asientos",                                  core:"Sí",                         plus:"Sí",                           ultra:"Sí"},
+        {item:"Pilot Assist (hasta 130 km/h)",               core:"Sí",                         plus:"Sí",                           ultra:"Sí"},
+        {item:"Techo panorámico eléctrico",                  core:"Sí",                         plus:"Sí",                           ultra:"Sí"},
+        {item:"Cámara",                                      core:"Trasera + sensores",         plus:"360°",                         ultra:"360°"},
+        {item:"Estacionamiento asistido trasero y lateral",  core:"—",                          plus:"Sí",                           ultra:"Sí"},
+        {item:"Head-up display",                             core:"—",                          plus:"Sí (verificar en la unidad)",  ultra:"Sí"},
+        {item:"Suspensión",                                  core:"Chasis Comfort FSD",         plus:"Chasis Comfort FSD",           ultra:"Neumática activa"},
+        {item:"Audio",                                       core:"High Performance 220 W",     plus:"Harman Kardon 600 W",          ultra:"Bowers & Wilkins 1.460 W"},
+        {item:"Aire del habitáculo",                         core:"Clean Zone",                 plus:"Purificador PM2.5",            ultra:"Purificador PM2.5"},
+        {item:"Tapiz",                                       core:"Nordico (vinilo)",           plus:"Nordico; napa ventilada opcional",ultra:"Napa ventilada"},
+        {item:"Soporte lumbar",                              core:"Eléctrico 2 vías",           plus:"Eléctrico 4 vías",             ultra:"Eléctrico 4 vías"},
+        {item:"Memoria de asientos",                         core:"Solo conductor",             plus:"Conductor y copiloto",         ultra:"Conductor y copiloto"},
+        {item:"Asientos traseros y volante calefaccionados", core:"—",                          plus:"Sí",                           ultra:"Sí"},
+        {item:"Cortinillas en puertas traseras",             core:"—",                          plus:"—",                            ultra:"Sí"},
+        {item:"Vidrios laminados",                           core:"—",                          plus:"—",                            ultra:"Sí"},
+        {item:"Palanca de cambios",                          core:"Personalizada",              plus:"Cristal Orrefors",             ultra:"Cristal Orrefors"},
+        {item:"Decoración interior",                         core:"Aluminio a cuadros",         plus:"Brown Ash (madera)",           ultra:"Grey Ash (madera)"}
+      ],
+      pasos: [
+        {de:"core", a:"plus", texto:"Cámara 360° y estacionamiento asistido, head-up display, Harman Kardon con subwoofer, purificador PM2.5, copiloto eléctrico con memoria, llantas 21\", madera y palanca Orrefors."},
+        {de:"plus", a:"ultra", texto:"Suspensión neumática con modo Off-road, Bowers & Wilkins, napa ventilada, almohadillas laterales eléctricas, cortinillas traseras y vidrios laminados."}
+      ],
+      comunes: "SUV grande de 7 asientos, híbrido enchufable, diseñado y fabricado en Torslanda, Suecia, sobre plataforma SPA (facelift de septiembre 2024). 2.0 turbo adelante y motor eléctrico de 107 kW atrás: tracción integral eléctrica. Batería de 18,8 kWh (14,9 utilizables). Carga solo en corriente alterna, conector tipo 2: unas 3 a 4 h en casa. Estanque de 71 l. Seguridad completa de serie, climatizador de 4 zonas con salidas para la 3ª fila, pantalla de 11,2\" con Google. Maletero 244 / 650 / 1.941 l. Remolque 2.400 kg con freno. IIHS Top Safety Pick+ 2025 (unidades desde enero 2025).",
+      garantia: "Batería: 5 años o 100.000 km según el libro de servicio y garantía de Volvo Chile.",
+      mantencion: "Cada 10.000 km o 1 año, lo que ocurra primero.",
+      mantKm: 10000,
+      mantMeses: 12,
+      notasInternas: [
+        "Es enchufable para quien carga: el 55,6 km/l del MTT supone cargar a diario. Con batería vacía gasta 8 a 10 l/100 km. Decirlo antes de cerrar y dejarlo por escrito.",
+        "Potencia: la ficha MY27 dice 406 hp y 669 Nm; volvohomestore.cl, 462 hp. Usar 455 hp (335 kW = 228 + 107 kW del manual) y ofrecer confirmarlo con Inchcape.",
+        "Ultra Dark: la Ultra con parrilla, espejos, molduras y barras de techo en negro. Sin precio publicado (en el lanzamiento costaba $4 millones más que la Ultra).",
+        "No carga en corriente continua. Cargador a bordo: 3,7 kW según Volvo Chile; la prensa europea informa 6,4 kW. Decir \"3 a 4 horas en un cargador de muro\".",
+        "Campaña 25088V01: XC90 T8 vendidos entre agosto 2024 y diciembre 2025, software de frenos en modo B, corregida por OTA. Verificar el VIN.",
+        "La 3ª fila es para niños y trayectos cortos: que el cliente se siente atrás antes de comprar.",
+        "Euro NCAP 2015 es referencia histórica; la certificación vigente es IIHS Top Safety Pick+ 2025, con \"aceptable\" en peatones y anclajes infantiles.",
+        "El EX90 no lo reemplaza: Volvo anunció que conviven."
       ]
     }
 
