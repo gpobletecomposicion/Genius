@@ -182,6 +182,76 @@ body.is-offline .offline-chip{display:block}
 .splash img{width:96px;height:96px;border-radius:22px}
 .splash.hide{opacity:0;pointer-events:none}
 @media (max-width:900px){ .mobile-nav a{min-height:44px;display:flex;align-items:center} }
+
+/* anexo: ecosistema Volvo–Geely */
+.eco-bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:14px}
+.eco-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.eco-chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 15px;min-height:44px;font-weight:700;cursor:pointer}
+.eco-chip.other{background:transparent;border-style:dashed;color:var(--muted);font-weight:600}
+.eco-chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);border-style:solid}
+.eco-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);margin:0 0 12px}
+.eco-legend span{display:inline-flex;align-items:center;gap:6px}
+.eco-legend i{display:inline-block;width:22px;height:0;border-top:2px solid var(--accent)}
+.eco-legend i.d{border-top-style:dashed;border-color:var(--warn)}
+.eco-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 2px 10px}
+.eco-map{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:0 30px;min-width:calc(var(--n) * 128px)}
+.eco-col{display:flex;flex-direction:column;min-width:0}
+.eco-col h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:8px 0 2px;font-weight:800}
+.eco-col h4:first-child{margin-top:0}
+.eco-stack{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.eco-node{position:relative;z-index:1;display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);
+  border-radius:12px;padding:9px 10px;cursor:pointer;min-height:44px;transition:opacity .2s}
+.eco-node b{display:block;font-size:.88rem;line-height:1.2;font-weight:700}
+.eco-node small{display:block;color:var(--muted);font-size:.74rem;line-height:1.25;margin-top:3px}
+.eco-node.mod{border:2px solid var(--ink)}
+.eco-node.mod b{font-size:1.02rem;font-weight:800}
+.eco-node.out{border-style:dashed}
+.eco-node.pv{border-style:dashed;border-color:var(--warn)}
+.eco-node.dim{opacity:.35}
+.eco-node.sel{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.eco-node.sel small,.eco-node.sel .eco-st{color:inherit;opacity:.9}
+.eco-st{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.02em;margin-top:5px;color:var(--muted)}
+.eco-st.pv{color:var(--warn)}
+.eco-st.duda{color:var(--moss)}
+svg.eco-lines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+svg.eco-lines path{fill:none;stroke:var(--accent);stroke-width:2;opacity:.55}
+svg.eco-lines path.hot{stroke-width:3;opacity:.95}
+svg.eco-lines path.d{stroke:var(--warn);stroke-dasharray:6 5;opacity:.8}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--paper);color:var(--muted)}
+.pill.of{background:var(--ok-soft);color:var(--ok)}
+.pill.pr{background:var(--accent-soft);color:var(--accent)}
+.pill.pv{background:var(--warn-soft);color:var(--warn)}
+.eco-detail{margin-bottom:18px;scroll-margin-top:16px}
+.eco-detail h2{margin:4px 0 6px;font-size:1.5rem}
+.eco-duda{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0 0;font-size:.95rem}
+.eco-group{margin:0 0 14px}
+.eco-group h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px;font-weight:800}
+.eco-links{display:flex;flex-wrap:wrap;gap:6px}
+.eco-link{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 11px;min-height:40px;cursor:pointer;font-size:.9rem;font-weight:600;text-align:left}
+.eco-link.pv{border-style:dashed;border-color:var(--warn)}
+.eco-link small{color:var(--muted);font-weight:500}
+.eco-path{padding:10px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.eco-path:last-child{border-bottom:0}
+.eco-path .arrow{color:var(--muted);margin:0 4px}
+.eco-path a{color:var(--accent);font-weight:700}
+.eco-tree ul{list-style:none;margin:0;padding:0 0 0 22px;border-left:2px solid var(--line)}
+.eco-tree>ul{padding-left:0;border-left:0}
+.eco-tree li{margin:8px 0}
+.eco-tree li>ul{margin-left:14px}
+.own{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border:1px solid var(--line);background:var(--surface);border-radius:12px;
+  padding:9px 12px;min-height:44px;cursor:pointer;text-align:left;max-width:100%}
+.own b{font-weight:700}
+.own small{color:var(--muted)}
+.own.ref{border-style:dashed;background:transparent}
+.own.sel{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.own.sel small{color:inherit;opacity:.9}
+.eco-link-ficha{display:inline-block;margin-top:12px;color:var(--accent);font-weight:700;text-decoration:none}
+@media (max-width:640px){
+  .eco-map{grid-template-columns:1fr;min-width:0;gap:26px 0}
+  .eco-stack{flex-direction:row;flex-wrap:wrap}
+  .eco-col h4{flex:1 0 100%}
+  .eco-node{width:auto;flex:1 1 140px}
+}
 </style>
 </head>
 <body>
@@ -204,6 +274,7 @@ body.is-offline .offline-chip{display:block}
 <nav class="mobile-nav" id="mobilenav" aria-label="Secciones"></nav>
 
 <script src="modelos.js"></script>
+<script src="ecosistema.js"></script>
 <script>
 /* ---------- Datos: vienen de modelos.js ---------- */
 const DATA_DATE = GENIUS_DATA.fecha;
@@ -257,7 +328,8 @@ const consOf = (v) => v.cons * COND[S.cond].f * (S.cold ? 1.2 : 1); // kWh/100 k
 /* ---------- Navegación ---------- */
 const ROUTES = [
   ["gama","Gama"],["ficha","Ficha"],["comparar","Comparar versiones"],["energia","Costo de energía"],
-  ["costo-total","Costo total"],["carga","Tiempo de carga"],["autonomia","Autonomía real"],["phev","Híbrido enchufable"],["campana","Campaña de batería"]
+  ["costo-total","Costo total"],["carga","Tiempo de carga"],["autonomia","Autonomía real"],["phev","Híbrido enchufable"],["campana","Campaña de batería"],
+  ["ecosistema","Anexo: ecosistema"]
 ];
 function navHTML(cur){ return ROUTES.map(([id,l])=> id==="ficha"
   ? `<a href="#${S.model}" ${MODELS[cur]?'aria-current="page"':''}>${M.nombre}</a>`
@@ -375,7 +447,7 @@ const fichaView = () => {
       </ul>
     </div>
     <div>
-      <div class="panel"><h3>Para quién es</h3><p style="margin:0">${v.fit}</p></div>
+      <div class="panel"><h3>Para quién es</h3><p style="margin:0">${v.fit}</p>${ecoModOf(S.model)?`<a class="eco-link-ficha" href="#ecosistema" data-eco-go="${ecoModOf(S.model)}">De dónde viene: ver en el ecosistema →</a>`:""}</div>
       <div class="note internal"><span class="internal-tag">Solo para ti</span>${v.notes.map(n=>`<p>${n}</p>`).join("")}</div>
       <div class="panel" style="margin-top:12px"><h3>Comunes a todas</h3>
         <p style="margin:0">${M.comunes}</p>
@@ -684,6 +756,180 @@ function renderPhevResult(){
     ${r.charges===0?`<div class="note warn"><p>Sin cargar, el ${M.nombre} anda siempre a bencina con el peso de la batería. Si el cliente no tiene dónde enchufar, derivar al XC40 Mild Hybrid.</p></div>`:""}`;
 }
 
+/* ---------- Anexo: ecosistema Volvo–Geely (datos en ecosistema.js) ---------- */
+const ECO = ECO_DATA;
+const EN = Object.fromEntries(ECO.nodos.map(n=>[n.id,n]));
+const EOUT = {}, EIN = {};
+ECO.nodos.forEach(n=>{ EOUT[n.id]=[]; EIN[n.id]=[]; });
+ECO.enlaces.forEach(([a,b])=>{ EOUT[a].push(b); EIN[b].push(a); });
+const ECOL = id => ECO.columnas.findIndex(c=>c.grupos.some(g=>g.tipos.includes(EN[id].t)));
+const EGRUPOS = ECO.columnas.flatMap(c=>c.grupos);
+const inChain = n => n.t!=="prop" || EOUT[n.id].length>0;      // empresas solo si aportan algo a un modelo
+const ecoModOf = appId => (ECO.nodos.find(n=>n.app===appId)||{}).id;
+const ST_LABEL = {of:"Oficial",pr:"Prensa",pv:"Por verificar"};
+const edgeEst = e => e[2] || ((EN[e[0]].estado==="pv"||EN[e[1]].estado==="pv") ? "pv" : "of");
+const isSupportEdge = (a,b) => ECOL(a)===ECOL(b) && ["id","dis"].includes(EN[a].t);
+function ecoSel(){ if(!EN[S.ecoSel]) S.ecoSel = ecoModOf(S.model) || "MOD-01"; return S.ecoSel; }
+/* Qué se ilumina: para un modelo, todo lo que llega a él; para otro nodo, a qué modelos llega y quién lo alimenta. */
+function ecoSet(x){
+  const s=new Set([x]), q=[x];
+  if(EN[x].t==="mod"){
+    while(q.length){ const c=q.shift(); EIN[c].forEach(f=>{ if(!isSupportEdge(f,c) && !s.has(f)){ s.add(f); q.push(f); } }); }
+  } else {
+    while(q.length){ const c=q.shift(); EOUT[c].forEach(t=>{ if(!s.has(t)){ s.add(t); q.push(t); } }); }
+    EIN[x].forEach(f=>s.add(f));
+  }
+  return s;
+}
+/* Camino más corto desde un nodo hasta cada modelo al que llega. */
+function ecoPaths(x){
+  const par={[x]:null}, q=[x], out=[];
+  while(q.length){ const c=q.shift(); EOUT[c].forEach(t=>{ if(!(t in par)){ par[t]=c; q.push(t); } }); }
+  Object.keys(par).filter(k=>k!==x && EN[k].t==="mod").forEach(m=>{ const p=[]; for(let k=m;k;k=par[k]) p.unshift(k); out.push(p); });
+  return out.sort((a,b)=> (EN[a.at(-1)].app?0:1)-(EN[b.at(-1)].app?0:1) || ECO.nodos.indexOf(EN[a.at(-1)])-ECO.nodos.indexOf(EN[b.at(-1)]));
+}
+const ecoSt = n => n.estado==="pv" ? `<span class="eco-st pv">Por verificar</span>`
+  : n.duda ? `<span class="eco-st duda">● Dato por confirmar</span>` : n.estado==="pr" ? `<span class="eco-st">Prensa</span>` : "";
+const ecoPill = n => `<span class="pill ${n.estado}">${ST_LABEL[n.estado]}</span>`;
+const ecoBtn = (id,extra="") => { const n=EN[id]; return `<button class="eco-link ${n.estado==="pv"?"pv":""}" data-eco="${id}">${n.c}${extra}</button>`; };
+
+function ecoNodeCard(n,sel,set){
+  const cls = ["eco-node", n.t==="mod"?"mod":"", n.t==="mod"&&!n.app?"out":"", n.estado==="pv"?"pv":"",
+    n.id===sel?"sel":"", S.ecoAll && !set.has(n.id)?"dim":""].join(" ");
+  const sub = n.t==="mod" ? (n.app ? "En la app" : n.chile) : (n.lugar||"");
+  return `<button class="${cls}" data-eco="${n.id}" data-node="${n.id}"><b>${n.c}</b><small>${sub}</small>${ecoSt(n)}</button>`;
+}
+
+function ecoMap(sel,set){
+  const show = n => inChain(n) && (S.ecoAll || set.has(n.id));
+  const cols = ECO.columnas.map(c=>c.grupos.map(g=>({g, nodes:ECO.nodos.filter(n=>g.tipos.includes(n.t) && show(n))})).filter(x=>x.nodes.length))
+    .filter(gs=>gs.length);
+  return `<div class="eco-wrap"><div class="eco-map" id="eco-map" style="--n:${cols.length}">
+    <svg class="eco-lines" id="eco-lines" aria-hidden="true"></svg>
+    ${cols.map(gs=>`<div class="eco-col"><div class="eco-stack">${gs.map(x=>`<h4>${x.g.titulo}</h4>${x.nodes.map(n=>ecoNodeCard(n,sel,set)).join("")}`).join("")}</div></div>`).join("")}
+  </div></div>`;
+}
+
+function ecoDetail(sel){
+  const n=EN[sel], ty=ECO.tipos[n.t];
+  const duda = n.duda ? `<div class="eco-duda"><b>Por confirmar:</b> ${n.duda}</div>` : "";
+  if(n.t==="mod"){
+    const set=ecoSet(sel); set.delete(sel);
+    const groups = EGRUPOS.map(g=>[g.titulo, [...set].filter(id=>g.tipos.includes(EN[id].t))]).filter(g=>g[1].length);
+    return `<div class="panel eco-detail" id="eco-detail">
+      <div class="eco-bar" style="margin:0"><span class="pill">${ty}</span>${n.estado!=="of"?ecoPill(n):""}</div>
+      <h2>${n.n}</h2>
+      <p style="margin:0 0 6px">${n.clave}</p>
+      <p class="hint" style="margin:0 0 16px">Chile: ${n.chile} La planta exacta de cada unidad sale de la ficha Inchcape o del VIN.</p>
+      <div class="grid2">${[groups.slice(0,Math.ceil(groups.length/2)),groups.slice(Math.ceil(groups.length/2))].map(gs=>`<div>${gs.map(([t,ids])=>`
+        <div class="eco-group"><h4>${t}</h4><div class="eco-links">${ids.map(id=>ecoBtn(id, EN[id].estado==="pv"?" <small>· por verificar</small>":"")).join("")}</div></div>`).join("")}</div>`).join("")}</div>
+      ${n.app?`<a class="eco-link-ficha" href="#${n.app}">Abrir ficha ${MODELS[n.app].nombre} →</a>`:`<p class="hint" style="margin:8px 0 0">Este modelo no está en la app.</p>`}
+    </div>`;
+  }
+  const paths = ecoPaths(sel);
+  const children = []; (function walk(list){ list.forEach(o=>{ if(o.id===sel && o.hijos) o.hijos.forEach(h=>children.push(h)); o.hijos&&walk(o.hijos); }); })(ECO.propiedad);
+  return `<div class="panel eco-detail" id="eco-detail">
+    <div class="eco-bar" style="margin:0"><span class="pill">${ty}</span>${ecoPill(n)}</div>
+    <h2>${n.n}</h2>
+    <div class="grid2">
+      <div>
+        <ul class="list">
+          ${n.lugar?`<li><span>${n.t==="plat"?"Desarrollo":"Dónde"}</span><b>${n.lugar}</b></li>`:""}
+          ${n.dueno?`<li><span>Dueño</span><b>${n.dueno}</b></li>`:""}
+        </ul>
+        <p style="margin:10px 0 0">${n.que}</p>
+        ${children.length?`<div class="eco-group" style="margin-top:14px"><h4>Es dueño de</h4><div class="eco-links">${children.map(h=>ecoBtn(h.id,` <small>· ${h.pct}</small>`)).join("")}</div></div>`:""}
+        ${duda}
+      </div>
+      <div>
+        <h3>Cómo llega a los modelos</h3>
+        ${paths.length ? paths.map(p=>{ const m=EN[p.at(-1)]; return `<div class="eco-path">${p.map((id,i)=>`${i?`<span class="arrow">→</span>`:""}${i===p.length-1
+            ? (m.app?`<a href="#${m.app}">${m.c}</a>`:`<b>${m.c}</b> <small class="hint">(no está en la app)</small>`)
+            : `<span>${EN[id].c}</span>`}`).join("")}</div>`; }).join("")
+          : `<p class="hint" style="margin:0">No llega a ningún modelo de la gama: está en el mapa como contexto.</p>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function ecoTree(sel){
+  const item = o => { const n=EN[o.id];
+    return `<li><button class="own ${o.ref?"ref":""} ${o.id===sel?"sel":""}" data-eco="${o.id}"><b>${n.c}</b><small>${o.pct}${o.ref?" · participación":""}</small>${n.estado==="pv"?`<small>· por verificar</small>`:o.duda?`<small>· % por confirmar</small>`:""}</button>
+      ${o.hijos?`<ul>${o.hijos.map(item).join("")}</ul>`:""}</li>`; };
+  return `<div class="grid2">
+    <div class="panel eco-tree"><h3>Quién es dueño de quién</h3><ul>${ECO.propiedad.map(item).join("")}</ul></div>
+    <div>
+      <div class="panel"><h3>Aparte: no es del grupo</h3><div class="eco-tree"><ul>${ECO.aparte.map(id=>item({id,pct:EN[id].dueno})).join("")}</ul></div>
+        <p class="hint" style="margin:10px 0 0">Volvo Group (camiones y buses) y Volvo Cars son empresas separadas desde 1999: solo comparten la marca VOLVO.</p></div>
+      <div class="note"><p>Zeekr Technology Europe, que desarrolló la base del EX30, no depende de Volvo Cars: es filial de Zeekr, dentro de Geely Auto.</p>
+        <p>Volvo vendió su 30% de Lynk & Co en 2024, pero desde 2026 la importa a Europa en exclusiva.</p></div>
+    </div>
+  </div>`;
+}
+
+views.ecosistema = () => {
+  const sel=ecoSel(), set=ecoSet(sel), tab=S.ecoTab||"mapa";
+  const mods = ECO.nodos.filter(n=>n.t==="mod");
+  return `
+  <h1>Anexo: ecosistema Volvo–Geely</h1>
+  <p class="lede">De dónde sale cada modelo: quién desarrolló su plataforma, quién lo diseñó, dónde se fabrica y qué piezas clave trae. Toca cualquier tarjeta para seguir el camino.</p>
+  <div class="eco-bar">${seg("ecoTab",[["mapa","Cómo llega al modelo"],["propiedad","Quién es dueño de quién"]],tab)}</div>
+  ${tab==="mapa" ? `
+  <div class="eco-chips" role="group" aria-label="Modelo">${mods.map(n=>`<button class="eco-chip ${n.app?"":"other"}" data-eco="${n.id}" aria-pressed="${n.id===sel}">${n.c}</button>`).join("")}</div>
+  ${ecoDetail(sel)}
+  <div class="eco-bar">
+    ${seg("ecoAll",[[false,"Solo lo conectado"],[true,"Todo el ecosistema"]],!!S.ecoAll)}
+  </div>
+  <div class="eco-legend">
+    <span><i></i> Conexión confirmada (oficial o prensa)</span>
+    <span><i class="d"></i> Conexión por verificar</span>
+    <span><b style="color:var(--warn)">Borde punteado rojo</b> dato por verificar</span>
+    <span><b style="color:var(--moss)">●</b> una parte del dato por confirmar</span>
+    <span>Modelo con borde punteado: no está en la app</span>
+  </div>
+  ${ecoMap(sel,set)}` : `${ecoTree(sel)}${EN[sel].t!=="mod"?`<div style="margin-top:18px">${ecoDetail(sel)}</div>`:`<p class="hint" style="margin-top:14px">Toca una empresa para ver qué hace y a qué modelos llega.</p>`}`}
+  <div class="note internal" style="margin-top:22px"><span class="internal-tag">Solo para ti · pendientes del Doc</span>
+    <p>Los cuatro primeros cambian lo que le dirías a un cliente:</p>
+    <ol style="margin:6px 0 0;padding-left:20px">${ECO.pendientes.map(p=>`<li style="margin:3px 0">${p}</li>`).join("")}</ol>
+  </div>
+  <p class="hint" style="margin-top:14px">Fuente: Claude Doc «Ecosistema Volvo–Geely: base de datos para el mapa», ${ECO.fecha}. Oficial = comunicado o sitio Volvo/Geely · Prensa = medio especializado · Por verificar = fuente débil o sin confirmar.</p>`;
+};
+
+/* Líneas del mapa: se recalculan al dibujar, al girar la tablet y al cambiar el tamaño. */
+function drawEcoLines(){
+  const map=document.getElementById("eco-map"), svg=document.getElementById("eco-lines");
+  if(!map||!svg) return;
+  const sel=ecoSel(), set=ecoSet(sel), box=map.getBoundingClientRect();
+  const stacked = matchMedia("(max-width:640px)").matches;
+  const R = {}; map.querySelectorAll("[data-node]").forEach(el=>{ const r=el.getBoundingClientRect();
+    R[el.dataset.node]={l:r.left-box.left,r:r.right-box.left,t:r.top-box.top,b:r.bottom-box.top,cx:(r.left+r.right)/2-box.left,cy:(r.top+r.bottom)/2-box.top}; });
+  const paths=[];
+  ECO.enlaces.forEach(e=>{
+    const [a,b]=e; if(!R[a]||!R[b]||!set.has(a)||!set.has(b)) return;
+    if(EN[sel].t==="mod" && isSupportEdge(a,b)) return;
+    const A=R[a], B=R[b]; let d;
+    if(stacked){
+      const up = A.cy>B.cy, y1= up?A.t:A.b, y2= up?B.b:B.t, k=Math.max(18,Math.abs(y2-y1)/2)*(up?-1:1);
+      d=`M${A.cx},${y1} C${A.cx},${y1+k} ${B.cx},${y2-k} ${B.cx},${y2}`;
+    } else if(ECOL(a)===ECOL(b)){
+      const x=Math.min(A.l,B.l), k=16;
+      d=`M${A.l},${A.cy} C${x-k},${A.cy} ${x-k},${B.cy} ${B.l},${B.cy}`;
+    } else {
+      const right = A.cx<B.cx, x1= right?A.r:A.l, x2= right?B.l:B.r, k=Math.max(14,Math.abs(x2-x1)/2)*(right?1:-1);
+      d=`M${x1},${A.cy} C${x1+k},${A.cy} ${x2-k},${B.cy} ${x2},${B.cy}`;
+    }
+    const cls=[edgeEst(e)==="pv"?"d":"", (a===sel||b===sel)?"hot":""].join(" ");
+    paths.push(`<path class="${cls}" d="${d}"/>`);
+  });
+  svg.setAttribute("viewBox",`0 0 ${box.width} ${box.height}`);
+  svg.innerHTML=paths.join("");
+}
+let ecoRaf=0;
+const ecoRedraw=()=>{ cancelAnimationFrame(ecoRaf); ecoRaf=requestAnimationFrame(drawEcoLines); };
+window.addEventListener("resize",ecoRedraw);
+window.addEventListener("orientationchange",()=>setTimeout(ecoRedraw,250));
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(ecoRedraw);
+
 views.campana = () => `
   <h1>${CAMP.titulo}</h1>
   <p class="lede">${CAMP.alcance}</p>
@@ -702,7 +948,7 @@ views.campana = () => `
   <p class="hint" style="margin-top:18px">Estado al ${DATA_DATE}. Revisar novedades antes de atender a un dueño.</p>`;
 
 /* ---------- Render y eventos ---------- */
-const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult,phev:renderPhevResult};
+const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult,phev:renderPhevResult,ecosistema:drawEcoLines};
 document.getElementById("stamp").textContent = `Datos al ${DATA_DATE}. Precios y tarifas: verificar antes de cotizar.`;
 function route(){ const h=(location.hash||"").slice(1); if(MODELS[h]) return h; return views[h]?h:"gama"; }
 function render(){
@@ -720,6 +966,12 @@ function render(){
 function refreshResult(){ const f=AFTER[route()]; f&&f(); }
 
 document.addEventListener("click",e=>{
+  const eg=e.target.closest("[data-eco-go]");
+  if(eg){ S.ecoSel=eg.dataset.ecoGo; S.ecoTab="mapa"; save(); return; }
+  const eb=e.target.closest("[data-eco]");
+  if(eb){ S.ecoSel=eb.dataset.eco; save(); const y=window.scrollY; render(); window.scrollTo(0,y);
+    if(eb.closest(".eco-map")){ const d=document.getElementById("eco-detail"); if(d && d.getBoundingClientRect().top<0) d.scrollIntoView({behavior:"smooth",block:"start"}); }
+    return; }
   const mb=e.target.closest("[data-model]");
   if(mb){ setModel(mb.dataset.model); save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   const vb=e.target.closest("[data-ver]");
