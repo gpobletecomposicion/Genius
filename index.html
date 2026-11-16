@@ -102,6 +102,9 @@ p{max-width:70ch}
 .note p{margin:4px 0}
 .internal-tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--moss);margin-bottom:4px}
 body.client .internal{display:none!important}
+.client-only{display:none}
+body.client .client-only{display:inline}
+.tbc{color:var(--moss);font-weight:600}
 
 /* tabla comparativa */
 .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
@@ -296,7 +299,7 @@ const DEFAULTS = {
   model:"ex30", version:"plus", client:false,
   kmDay:40, daysWeek:6, cond:"mixto", cold:false, homeShare:80,
   tHome:250, tPublic:400, fuel:1550, kmL:12,
-  years:5, kmYear:15000, priceIce:32000000, maintEv:200000, maintIce:450000,
+  years:5, kmYear:15000, priceIce:32000000, maintEv:200000, maintEvSrv:300000, maintIce:450000,
   permEv:120000, permIce:380000, insEv:1000000, insIce:1000000, resEv:50, resIce:50,
   maintMh:300000, permMh:380000, insMh:1000000, resMh:50,
   maintPh:300000, permPh:1000000, insPh:1500000, resPh:50,
@@ -323,6 +326,14 @@ const clp = n => "$" + Math.round(n).toLocaleString("es-CL");
 const fmt = (n,d=0) => Number(n).toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d});
 const ver = () => V[S.version];
 const dcText = v => v.dc ? v.dc+" kW" : "Por confirmar";
+/* Modo cliente: los datos "Por confirmar" se muestran como "Consultar con tu asesor" y las
+   aclaraciones internas entre paréntesis (por confirmar, verificar, ficha Inchcape…) se ocultan. */
+const INTERNAL_RX = /\s*\((?=[^()]*(?:confirmar|verificar|ficha|web|dato de otro mercado|dato Core))[^()]*\)/gi;
+function pub(s,omit){
+  s = String(s);
+  if(/^por confirmar/i.test(s)) return `<span class="internal tbc">${s}</span>${omit?"":`<span class="client-only">Consultar con tu asesor</span>`}`;
+  return s.replace(INTERNAL_RX, m=>`<span class="internal">${m}</span>`);
+}
 const consOf = (v) => v.cons * COND[S.cond].f * (S.cold ? 1.2 : 1); // kWh/100 km
 
 /* ---------- Navegación ---------- */
@@ -364,7 +375,7 @@ const views = {};
 
 views.gama = () => `
   <h1>Gama Volvo Chile</h1>
-  <p class="lede">Toca un modelo para ver versiones, ficha y argumentos. El resto de la gama se suma desde tus dossiers.</p>
+  <p class="lede">Toca un modelo para ver sus versiones, ficha técnica y equipamiento. Precios publicados con bonos y financiamiento, IVA incluido.</p>
   <div class="range-grid">
     ${RANGE.map(m=> m.modelo && MODELS[m.modelo]
       ? `<a class="car live" href="#${m.modelo}"><div class="name">${m.nombre}</div><div class="what">${m.tipo}</div><div class="from">Desde ${clp(fromPrice(m.modelo))}</div></a>`
@@ -381,9 +392,9 @@ views.gama = () => `
 
 const fichaView = () => {
   const v = ver();
-  const eq = `<ul class="list">${EQUIP.map(r=>`<li><span>${r.item}</span><b>${r[v.id]}</b></li>`).join("")}</ul>`;
+  const eq = `<ul class="list">${EQUIP.map(r=>`<li><span>${r.item}</span><b>${pub(r[v.id])}</b></li>`).join("")}</ul>`;
   const ev = isEV(M), ph = isPH(M);
-  const sub = ev ? `${v.drive} · batería ${v.gross} kWh ${v.chem}` : ph ? `${v.drive} · batería ${fmt(v.gross,1)} kWh (${fmt(v.net,1)} útiles) · solo carga AC` : `${v.drive} · ${v.gearbox.toLowerCase()} · tracción ${v.traction.toLowerCase()}`;
+  const sub = ev ? `${v.drive} · batería ${v.gross} kWh ${pub(v.chem,true)}` : ph ? `${v.drive} · batería ${fmt(v.gross,1)} kWh (${fmt(v.net,1)} útiles) · solo carga AC` : `${v.drive} · ${v.gearbox.toLowerCase()} · tracción ${v.traction.toLowerCase()}`;
   const specs = ph ? `
     <div class="spec"><div class="v">${v.evWltp}<span>km</span></div><div class="k">Autonomía eléctrica oficial</div></div>
     <div class="spec"><div class="v">${fmt(v.acc,1)}<span>s</span></div><div class="k">0 a 100 km/h</div></div>
@@ -430,6 +441,7 @@ const fichaView = () => {
         <li><span>Autonomía teórica (MTT mixto)</span><b>~${fmt(Math.round(v.tankL*v.kmL/10)*10)} km</b></li>
         <li><span>Rueda de repuesto</span><b>${v.spare}</b></li>
         <li><span>Peso en orden de marcha</span><b>${v.mass}</b></li>`;
+  const pubList = h => h.replace(/<b>([^<]*)<\/b>/g,(m,x)=>`<b>${pub(x)}</b>`);
   return `
   <div class="model-head">
     <div><h1>${M.nombre} ${v.name}</h1><p class="lede" style="margin:0">${sub}</p></div>
@@ -441,8 +453,8 @@ const fichaView = () => {
   <div class="grid2" style="margin-top:22px">
     <div class="panel">
       <h3>Ficha</h3>
-      <ul class="list">${list}
-        <li><span>Llantas</span><b>${v.wheels}</b></li>
+      <ul class="list">${pubList(list)}
+        <li><span>Llantas</span><b>${pub(v.wheels)}</b></li>
         <li><span>Velocidad máxima</span><b>${v.vmax} km/h</b></li>
       </ul>
     </div>
@@ -450,8 +462,8 @@ const fichaView = () => {
       <div class="panel"><h3>Para quién es</h3><p style="margin:0">${v.fit}</p>${ecoModOf(S.model)?`<a class="eco-link-ficha" href="#ecosistema" data-eco-go="${ecoModOf(S.model)}">De dónde viene: ver en el ecosistema →</a>`:""}</div>
       <div class="note internal"><span class="internal-tag">Solo para ti</span>${v.notes.map(n=>`<p>${n}</p>`).join("")}</div>
       <div class="panel" style="margin-top:12px"><h3>Comunes a todas</h3>
-        <p style="margin:0">${M.comunes}</p>
-        <ul class="list" style="margin-top:10px"><li><span>Garantía</span><b>${M.garantia}</b></li><li><span>Mantención</span><b>${M.mantencion}</b></li></ul></div>
+        <p style="margin:0">${pub(M.comunes)}</p>
+        <ul class="list" style="margin-top:10px"><li><span>Garantía</span><b>${pub(M.garantia)}</b></li><li><span>Mantención</span><b>${pub(M.mantencion)}</b></li></ul></div>
     </div>
   </div>
   <h2>Equipamiento ${v.name}</h2>
@@ -461,22 +473,22 @@ const fichaView = () => {
 
 views.comparar = () => {
   const rows = isPH(M) ? [
-    ["Precio desde",v=>clp(v.price)],["Tren motriz",v=>v.drive],["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],
+    ["Precio",v=>clp(v.price)],["Tren motriz",v=>v.drive],["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],
     ["0–100 km/h",v=>`${fmt(v.acc,1)} s`],["Batería total / útil",v=>`${fmt(v.gross,1)} / ${fmt(v.net,1)} kWh`],
     ["Autonomía eléctrica oficial",v=>`${v.evWltp} km`],["Autonomía eléctrica real",v=>`${v.evReal} km`],
     ["MTT ponderado",v=>`${fmt(v.mttKmL,1)} km/l`],["Llantas",v=>v.wheels],["Peso",v=>v.mass]
   ] : !isEV(M) ? [
-    ["Precio desde",v=>clp(v.price)],["Código",v=>v.code],["Motor",v=>v.motor],["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],
+    ["Precio",v=>clp(v.price)],["Código",v=>v.code],["Motor",v=>v.motor],["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],
     ["Caja",v=>v.gearbox],["Tracción",v=>v.traction],["0–100 km/h",v=>`${fmt(v.acc,1)} s`],
     ["Rendimiento MTT mixto",v=>`${fmt(v.kmL,1)} km/l`],["MTT ciudad / carretera",v=>`${fmt(v.kmLCity,1)} / ${fmt(v.kmLHwy,1)} km/l`],
     ["WLTP mixto publicado",v=>`${fmt(v.kmLWltp,1)} km/l`],["Llantas",v=>v.wheels],["Peso",v=>v.mass]
   ] : [
-    ["Precio desde",v=>clp(v.price)],["Código",v=>v.code],["Batería",v=>`${v.gross} kWh ${v.chem}`],["Motores",v=>v.motors],
+    ["Precio",v=>clp(v.price)],["Código",v=>v.code],["Batería",v=>`${v.gross} kWh ${v.chem}`],["Motores",v=>v.motors],
     ["Potencia",v=>`${v.hp} hp`],["Torque",v=>`${v.nm} Nm`],["Tracción",v=>v.traction],["0–100 km/h",v=>`${fmt(v.acc,1)} s`],
     ["Autonomía WLTP",v=>`${v.wltp} km`],["Autonomía realista",v=>`${v.real} km`],["Carga DC máx.",v=>dcText(v)],
     ["Carga DC 10–80%",v=>`~${v.dc1080} min`],["Carga diaria",v=>v.daily],["Llantas",v=>v.wheels]
   ];
-  const line = (label,vals) => { const diff = new Set(vals).size>1; return `<tr class="${diff?"diff":""}"><th scope="row">${label}</th>${vals.map(x=>`<td>${x}</td>`).join("")}</tr>`; };
+  const line = (label,vals) => { const diff = new Set(vals).size>1; return `<tr class="${diff?"diff":""}"><th scope="row">${label}</th>${vals.map(x=>`<td>${pub(x)}</td>`).join("")}</tr>`; };
   return `
   <h1>Comparar versiones ${M.nombre}</h1>
   <p class="lede">${M.compararLede||"Las filas marcadas son las que cambian entre versiones."}</p>
@@ -542,7 +554,7 @@ function renderEnergyResult(){
 }
 
 /* Campos del Volvo elegido en costo total: los eléctricos y los a bencina guardan valores separados. */
-const tcoKeys = () => isEV(M) ? {maint:"maintEv",perm:"permEv",ins:"insEv",res:"resEv"} : isPH(M) ? {maint:"maintPh",perm:"permPh",ins:"insPh",res:"resPh"} : {maint:"maintMh",perm:"permMh",ins:"insMh",res:"resMh"};
+const tcoKeys = () => isEV(M) ? {maint:"maintEvSrv",perm:"permEv",ins:"insEv",res:"resEv"} : isPH(M) ? {maint:"maintPh",perm:"permPh",ins:"insPh",res:"resPh"} : {maint:"maintMh",perm:"permMh",ins:"insMh",res:"resMh"};
 function tcoCalc(){
   const v = ver(), K = tcoKeys(), isE = isEV(M);
   const iceKm = S.fuel / S.kmL;
@@ -550,9 +562,10 @@ function tcoCalc(){
   const kmL = isE || ph ? null : v[KML_COND[S.cond]];
   const evKm = isE ? energyCalc().evKm : ph ? ph.costKm : S.fuel / kmL;
   const yrs = S.years, km = S.kmYear;
-  /* A bencina: la mantención se ingresa por servicio y se cuenta por la pauta (cada mantKm o mantMeses, lo que ocurra primero). */
-  const services = isE ? null : Math.max(Math.floor(yrs*12/M.mantMeses), Math.floor(km*yrs/M.mantKm));
-  const maintTot = isE ? S.maintEv*yrs : S[K.maint]*services;
+  /* Todos los modelos: la mantención se ingresa por servicio y se cuenta por la pauta
+     (cada mantKm o mantMeses, lo que ocurra primero). Eléctricos 30.000 km / 3 años; híbridos 10.000 km / 1 año. */
+  const services = Math.max(Math.floor(yrs*12/M.mantMeses), Math.floor(km*yrs/M.mantKm));
+  const maintTot = S[K.maint]*services;
   const ev = {buy:v.price*(1-S[K.res]/100), energy:evKm*km*yrs, maint:maintTot, perm:S[K.perm]*yrs, ins:S[K.ins]*yrs};
   const ice = {buy:S.priceIce*(1-S.resIce/100), energy:iceKm*km*yrs, maint:S.maintIce*yrs, perm:S.permIce*yrs, ins:S.insIce*yrs};
   const sum = o => Object.values(o).reduce((a,b)=>a+b,0);
@@ -578,11 +591,11 @@ views["costo-total"] = () => { const ev = isEV(M), K = tcoKeys(), o = ev ? "benc
       ${range("years","Años de uso",1,8,1," años")}
       ${range("kmYear","Kilómetros por año",5000,40000,1000," km")}
       ${money("priceIce","Precio del auto a bencina comparado","$","","El modelo que el cliente está mirando")}
-      <div class="two">${money(K.maint,"Mantención "+M.nombre+(ev?" / año":" / servicio"),"$","","Pauta: "+M.mantencion.toLowerCase())}${money("maintIce","Mantención "+o+" / año")}</div>
-      <div class="two">${money(K.perm,"Permiso "+M.nombre+" / año","$","",ev?"Descuento progresivo hasta 2031":"")}${money("permIce","Permiso "+o+" / año")}</div>
+      <div class="two">${money(K.maint,"Mantención "+M.nombre+" / servicio","$","","Pauta: "+M.mantencion.toLowerCase())}${money("maintIce","Mantención "+o+" / año")}</div>
+      <div class="two">${money(K.perm,"Permiso "+M.nombre+" / año","$","",ev||isPH(M)?"Ley 21.505: en 2026 paga el 25%; 50% en 2027–2028 y 75% en 2029–2030":"")}${money("permIce","Permiso "+o+" / año")}</div>
       <div class="two">${money(K.ins,"Seguro "+M.nombre+" / año")}${money("insIce","Seguro "+o+" / año")}</div>
       <div class="two">${range(K.res,"Reventa "+M.nombre,20,80,5,"%")}${range("resIce","Reventa "+o,20,80,5,"%")}</div>
-      <p class="hint internal">Mantención, permiso, seguro y reventa vienen con valores de ejemplo. Pídele al cliente sus cotizaciones o usa la tasación SII antes de mostrar un número final.${ev?" No prometas exención total de permiso: rigió hasta febrero de 2025.":""}</p>
+      <p class="hint internal">Mantención, permiso, seguro y reventa vienen con valores de ejemplo. Pídele al cliente sus cotizaciones o usa la tasación SII antes de mostrar un número final.${ev||isPH(M)?" Permiso: la exención total rigió hasta diciembre de 2024; usa el monto con el descuento del año, no $0.":""}</p>
     </div>
     <div class="panel result" id="res"></div>
   </div>`; };
@@ -599,6 +612,7 @@ function renderTcoResult(){
     <dl class="kv">${parts.map(([k,l])=>`<dt>${l}</dt><dd>${clp(r.ev[k])} · ${clp(r.ice[k])}</dd>`).join("")}</dl>
     <p class="hint">Columna izquierda: ${M.nombre}. Derecha: ${isEV(M)?"bencina":"el otro auto"}.</p>
     ${isPH(M)?`<p class="hint">${M.nombre}: ${fmt(r.ph.pct)}% de los km en eléctrico, ${clp(r.ph.costKm)} por km en luz + bencina. Mantención: ${r.services} servicios en ${S.years} años, ${M.mantencion.toLowerCase()}</p>`:""}
+    ${isEV(M)?`<p class="hint">Mantención: ${r.services} servicios en ${S.years} años, ${M.mantencion.toLowerCase()}</p>`:""}
     ${isEV(M)||isPH(M)?"":`<p class="hint">Rendimiento ${M.nombre} usado: ${fmt(r.kmL,1)} km/l (MTT ${COND[S.cond].label.toLowerCase()}). Mantención: ${r.services} servicios en ${S.years} años, ${M.mantencion.toLowerCase()}</p>`}`;
 }
 function chart(r){
@@ -621,7 +635,7 @@ const CHARGERS = {
 function chargeCalc(){
   const v=ver(), c=CHARGERS[S.charger], a=Math.min(S.from,S.to), b=Math.max(S.from,S.to);
   let min;
-  if(c.ac){ min = v.gross*(b-a)/100 / (c.kw*0.8) * 60; }
+  if(c.ac){ min = v.net*(b-a)/100 / (Math.min(c.kw,v.ac)*0.9) * 60; }
   else{
     const rate = v.dc1080/70; // min por punto %
     const seg=(lo,hi,f)=>Math.max(0,Math.min(b,hi)-Math.max(a,lo))*rate*f;
@@ -647,7 +661,7 @@ views.carga = () => `
   </div>`;
 function renderChargeResult(){
   const r=chargeCalc(), el=document.getElementById("res"); if(!el) return;
-  el.innerHTML = `<span class="est">${r.c.ac?"Según tabla del manual":"Estimación, batería a 25–30 °C"}</span>
+  el.innerHTML = `<span class="est">${r.c.ac?"Estimación con 10% de pérdidas":"Estimación, batería a 25–30 °C"}</span>
     <div class="big">${hm(r.min)}</div><div class="big-label">de ${Math.min(S.from,S.to)}% a ${Math.max(S.from,S.to)}% con ${r.c.label.toLowerCase()}</div>
     <dl class="kv">
       <dt>Energía cargada</dt><dd>~${fmt(r.kwh,1)} kWh</dd>
@@ -753,7 +767,7 @@ function renderPhevResult(){
     </dl>
     <p class="hint">Eléctrico: ${fmt(r.evV.cons,1)} kWh/100 km mixto, todo cargado en casa. ${M.equivEv.nota} Híbrido: ${fmt(v.net,1)} kWh útiles ÷ ${r.R} km = ${fmt(v.net/r.R*100,1)} kWh/100 km en eléctrico. Sin pérdidas de carga. Tarifa y bencina referenciales.</p>
     ${S.kmDay>r.R?`<div class="note"><p>Con ${S.kmDay} km al día la batería no alcanza: los últimos ${fmt(S.kmDay-r.R)} km de cada día van a bencina. Usar modo Pure al salir para gastar primero la batería.</p></div>`:""}
-    ${r.charges===0?`<div class="note warn"><p>Sin cargar, el ${M.nombre} anda siempre a bencina con el peso de la batería. Si el cliente no tiene dónde enchufar, derivar al XC40 Mild Hybrid.</p></div>`:""}`;
+    ${r.charges===0?`<div class="note warn internal"><span class="internal-tag">Solo para ti</span><p>Sin cargar, el ${M.nombre} anda siempre a bencina con el peso de la batería. Si el cliente no tiene dónde enchufar, derivar al XC40 Mild Hybrid.</p></div>`:""}`;
 }
 
 /* ---------- Anexo: ecosistema Volvo–Geely (datos en ecosistema.js) ---------- */
@@ -812,7 +826,7 @@ function ecoMap(sel,set){
 
 function ecoDetail(sel){
   const n=EN[sel], ty=ECO.tipos[n.t];
-  const duda = n.duda ? `<div class="eco-duda"><b>Por confirmar:</b> ${n.duda}</div>` : "";
+  const duda = n.duda ? `<div class="eco-duda internal"><b>Por confirmar:</b> ${n.duda}</div>` : "";
   if(n.t==="mod"){
     const set=ecoSet(sel); set.delete(sel);
     const groups = EGRUPOS.map(g=>[g.titulo, [...set].filter(id=>g.tipos.includes(EN[id].t))]).filter(g=>g[1].length);
@@ -820,7 +834,7 @@ function ecoDetail(sel){
       <div class="eco-bar" style="margin:0"><span class="pill">${ty}</span>${n.estado!=="of"?ecoPill(n):""}</div>
       <h2>${n.n}</h2>
       <p style="margin:0 0 6px">${n.clave}</p>
-      <p class="hint" style="margin:0 0 16px">Chile: ${n.chile} La planta exacta de cada unidad sale de la ficha Inchcape o del VIN.</p>
+      <p class="hint" style="margin:0 0 16px">Chile: ${n.chile}<span class="internal"> La planta exacta de cada unidad sale de la ficha Inchcape o del VIN.</span></p>
       <div class="grid2">${[groups.slice(0,Math.ceil(groups.length/2)),groups.slice(Math.ceil(groups.length/2))].map(gs=>`<div>${gs.map(([t,ids])=>`
         <div class="eco-group"><h4>${t}</h4><div class="eco-links">${ids.map(id=>ecoBtn(id, EN[id].estado==="pv"?" <small>· por verificar</small>":"")).join("")}</div></div>`).join("")}</div>`).join("")}</div>
       ${n.app?`<a class="eco-link-ficha" href="#${n.app}">Abrir ficha ${MODELS[n.app].nombre} →</a>`:`<p class="hint" style="margin:8px 0 0">Este modelo no está en la app.</p>`}
@@ -892,7 +906,7 @@ views.ecosistema = () => {
     <p>Los cuatro primeros cambian lo que le dirías a un cliente:</p>
     <ol style="margin:6px 0 0;padding-left:20px">${ECO.pendientes.map(p=>`<li style="margin:3px 0">${p}</li>`).join("")}</ol>
   </div>
-  <p class="hint" style="margin-top:14px">Fuente: Claude Doc «Ecosistema Volvo–Geely: base de datos para el mapa», ${ECO.fecha}. Oficial = comunicado o sitio Volvo/Geely · Prensa = medio especializado · Por verificar = fuente débil o sin confirmar.</p>`;
+  <p class="hint internal" style="margin-top:14px">Fuente: Claude Doc «Ecosistema Volvo–Geely: base de datos para el mapa», ${ECO.fecha}. Oficial = comunicado o sitio Volvo/Geely · Prensa = medio especializado · Por verificar = fuente débil o sin confirmar.</p>`;
 };
 
 /* Líneas del mapa: se recalculan al dibujar, al girar la tablet y al cambiar el tamaño. */
@@ -945,7 +959,7 @@ views.campana = () => `
       </div>
     </div>
   </div>
-  <p class="hint" style="margin-top:18px">Estado al ${DATA_DATE}. Revisar novedades antes de atender a un dueño.</p>`;
+  <p class="hint" style="margin-top:18px">Estado al ${DATA_DATE}.<span class="internal"> Revisar novedades antes de atender a un dueño.</span></p>`;
 
 /* ---------- Render y eventos ---------- */
 const AFTER = {energia:renderEnergyResult,"costo-total":renderTcoResult,carga:renderChargeResult,autonomia:renderRangeResult,phev:renderPhevResult,ecosistema:drawEcoLines};
@@ -978,7 +992,7 @@ document.addEventListener("click",e=>{
   if(vb){ S.version=vb.dataset.ver; save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   const sb=e.target.closest("[data-set]");
   if(sb){ const k=sb.dataset.set, raw=sb.dataset.val; S[k]= raw==="true"?true: raw==="false"?false: isNaN(+raw)?raw:+raw;
-    if(k==="to"||k==="from"){} save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    save(); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   const ct=e.target.closest("[data-client-toggle]");
   if(ct){ S.client=!S.client; save(); document.body.classList.toggle("client",S.client);
     document.querySelectorAll("[data-client-toggle]").forEach(t=>t.setAttribute("aria-checked",S.client)); }

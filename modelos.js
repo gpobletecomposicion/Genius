@@ -72,7 +72,9 @@ const GENIUS_DATA = {
       comunes: "4.233 mm de largo, radio de giro ~10 m, maletero 318 l (hasta 1.000 l), cinco estrellas Euro NCAP, bomba de calor, conectores Tipo 2 y CCS2.",
       garantia: "Batería: 8 años o 160.000 km; cubre si la capacidad baja de 75%, con las mantenciones hechas en la red Volvo.",
       mantencion: "Cada 30.000 km o 3 años, lo que ocurra primero.",
-      bombaCalor: "De serie",
+      mantKm: 30000,
+      mantMeses: 36,
+      bombaCalor: "De serie (según manual 2027; la ficha chilena no la informa)",
 
       notasInternas: [
         "Los precios publicados son con financiamiento Amicar y bonos, en unidades limitadas. Manejar siempre las dos cifras.",
@@ -122,11 +124,14 @@ const GENIUS_DATA = {
         {de:"p6", a:"p8", texto:"Tracción integral, 408 hp y 0–100 en 4,8 s, más todo el equipamiento Ultra: cámara 360°, Harman Kardon, faros Pixel, sunroof eléctrico, calefacción de asientos y volante, portalón eléctrico, llantas 20\" y decoración Topography."}
       ],
       comunes: "Diseñado en Suecia y fabricado en Gante, Bélgica. Pantalla central de 9\" con Google, panel de 12,3\", Apple CarPlay, cargador inalámbrico, keyless, climatizador bizona, CleanZone y toda la seguridad de serie (Pilot Assist, BLIS, frenado autónomo, siete airbags). Maletero 410 l más frunk de 31 l. Conectores Tipo 2 y CCS2.",
-      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica. Umbral de capacidad: Por confirmar.",
+      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica.",
       mantencion: "Cada 30.000 km o 3 años, lo que ocurra primero.",
+      mantKm: 30000,
+      mantMeses: 36,
       bombaCalor: "Por confirmar",
       notasInternas: [
         "Modelo en fin de ciclo: Volvo anunció un facelift global en septiembre de 2026, sin fecha para Chile. No negarlo ni inventar fechas.",
+        "Garantía de batería: umbral de capacidad por confirmar (en el EX30 Volvo Chile confirmó 75%). No prometer el 75% en este modelo hasta confirmarlo.",
         "Versión Plus: aparece en volvocars.com/cl sin precio ni stock en Chile. Por confirmar antes de ofrecerla.",
         "Carga DC máxima en kW: Por confirmar. Qué decir: entre 27 y 40 min de 10 a 80%, según cargador y temperatura de la batería.",
         "Los precios publicados incluyen bono de marca y de financiamiento, sin impuesto verde; cada concesionario los fija. Manejar siempre las dos cifras.",
@@ -167,13 +172,16 @@ const GENIUS_DATA = {
         {de:"p6", a:"p8", texto:"Tracción integral, 408 hp y 0–100 en 4,7 s, más el equipamiento Ultra: cámara 360°, Harman Kardon, faros Pixel, calefacción de asientos y volante, portalón eléctrico, llantas 20\" y decoración Topography."}
       ],
       comunes: "Misma base del EX40 con carrocería coupé: diseñado en Suecia y fabricado en Gante, Bélgica. Techo de vidrio fijo de serie, toda la seguridad de serie y el mismo equipamiento base. Maletero 404 l más frunk de 31 l. Conectores Tipo 2 y CCS2. Frente al EX40 cuesta $3 a $5 millones más.",
-      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica. Umbral de capacidad: Por confirmar.",
+      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica.",
       mantencion: "Cada 30.000 km o 3 años, lo que ocurra primero.",
+      mantKm: 30000,
+      mantMeses: 36,
       bombaCalor: "Por confirmar",
       notasInternas: [
         "Modelo en fin de ciclo: facelift global anunciado en septiembre de 2026, sin fecha para Chile.",
         "Versión Plus: sin precio ni stock en Chile. Por confirmar.",
         "EC40 P8: confirmar con Inchcape si sigue en producción o es stock.",
+        "Garantía de batería: umbral de capacidad por confirmar (en el EX30 Volvo Chile confirmó 75%).",
         "Carga DC máxima en kW: Por confirmar. Qué decir: entre 27 y 40 min de 10 a 80%, según cargador y temperatura.",
         "Autonomía realista: estimación del dossier (15% a 30% bajo WLTP), no dato oficial."
       ]
@@ -202,13 +210,13 @@ const GENIUS_DATA = {
       },
       equipamiento: [
         {item:"Suspensión",                           plus:"Amortiguadores convencionales",            ultra:"Neumática activa de doble cámara, con chasis activo"},
-        {item:"Faros",                                plus:"HD Pixel según ficha Inchcape (la web dice LED)", ultra:"HD Pixel, 1,3 millones de píxeles"},
+        {item:"Faros",                                plus:"HD Pixel (ficha Inchcape; la web dice LED)", ultra:"HD Pixel, 1,3 millones de píxeles"},
         {item:"Lavafaros",                            plus:"Opcional",                                 ultra:"Sí"},
         {item:"Audio",                                plus:"Bose, 14 parlantes",                       ultra:"Bowers & Wilkins, 25 parlantes, Dolby Atmos, 1.610 W"},
         {item:"Masaje en asientos delanteros",        plus:"—",                                        ultra:"Sí, 10 puntos y 5 programas"},
         {item:"Soporte lateral eléctrico",            plus:"—",                                        ultra:"Sí"},
         {item:"Cierre suave de puertas",              plus:"—",                                        ultra:"Sí"},
-        {item:"Vidrios laterales y trasero",          plus:"Laminados según ficha Inchcape (la web dice templados)", ultra:"Laminados"},
+        {item:"Vidrios laterales y trasero",          plus:"Laminados (ficha Inchcape; la web dice templados)", ultra:"Laminados"},
         {item:"Manillas",                             plus:"Color carrocería",                         ultra:"Integradas, desplegables, con luz al piso"},
         {item:"Head-up display",                      plus:"Sí",                                       ultra:"Sí"},
         {item:"Cámara 360° con vista 3D y Park Pilot Assist", plus:"Sí",                              ultra:"Sí"},
@@ -223,8 +231,10 @@ const GENIUS_DATA = {
         {de:"plus", a:"ultra", texto:"109 hp más y 0–100 en 4,9 s, suspensión neumática con chasis activo, llantas 22\", masaje y soporte lateral eléctrico, cierre suave de puertas, lavafaros y Bowers & Wilkins en vez de Bose. Si su prioridad es el confort de marcha, se nota; si no, la Plus ya trae toda la seguridad."}
       ],
       comunes: "SUV de siete plazas reales: la tercera fila acepta dos personas de hasta 1,70 m, con aire propio. Cinco estrellas Euro NCAP 2025, comprensión del conductor y detección de ocupantes. Pantalla central de 14,5\" y del conductor de 9\", Google integrado y Apple CarPlay inalámbrico, llave digital y tarjeta NFC. Maletero 324 l con siete plazas, 697 l con cinco y frunk de 46 l. Remolque con freno 2.200 kg. Mide 5,04 m de largo y 2,11 m de ancho con espejos. Bomba de calor de serie. Sin rueda de repuesto: kit de reparación.",
-      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica. Umbral de capacidad: Por confirmar.",
+      garantia: "Batería: 8 años o 160.000 km, igual que toda la gama eléctrica.",
       mantencion: "Cada 30.000 km o 3 años, lo que ocurra primero.",
+      mantKm: 30000,
+      mantMeses: 36,
       bombaCalor: "De serie",
       notasInternas: [
         "Año modelo: el stock chileno es 2025, de 400 V y 111 kWh (confirmado por Volvo Chile). El 2026 de 800 V, sin LiDAR, no llegará a Chile. Decirlo de frente.",
@@ -234,6 +244,7 @@ const GENIUS_DATA = {
         "Autonomía: decir \"hasta 600 km WLTP\" (ficha Inchcape); volvocars.com/cl publica 570 km. Realista 420–510 km, menos en frío: darla por escrito antes de cerrar.",
         "Carga: unos 30 min de 10 a 80% en cargador de alta potencia, con la batería preacondicionada. Con 50 kW: Por confirmar.",
         "Carga en casa: la web publica 15 h de 0 a 100% con wallbox de 7,2 kW. La calculadora de la app descuenta pérdidas y da más: usar la cifra de la web como dato oficial.",
+        "Garantía de batería: umbral de capacidad por confirmar (en el EX30 Volvo Chile confirmó 75%).",
         "Precio lista y códigos de versión: Por confirmar con Inchcape. No hay alertas del EX90 en SERNAC en lo revisado; verificar el VIN igual."
       ]
     },
@@ -278,12 +289,13 @@ const GENIUS_DATA = {
         {de:"core", a:"plus", texto:"Techo panorámico eléctrico, portalón manos libres, purificador PM2.5, asiento del copiloto eléctrico, llantas 19\" diamond cut, pomo Crystal, iluminación High Level y estética R-Design con rieles negro mate. Mismo motor, consumo y seguridad."}
       ],
       comunes: "SUV compacto a bencina con sistema mild hybrid de 48 V: recupera energía al frenar y ayuda al motor al arrancar; no se enchufa. Diseñado en Suecia y fabricado en Gante, Bélgica (confirmar con el VIN). Plataforma CMA, la misma del EX40. Toda la seguridad de serie desde la Core: Pilot Assist, City Safety, BLIS y 6 airbags. Tapiz Nordico sin cuero animal, pantalla de 9\" con Google, panel de 12,3\", Apple CarPlay, cargador inalámbrico, climatizador bizona y keyless. Maletero 436 l. Rueda de repuesto.",
-      garantia: "Garantía Volvo Chile (ver dossier general). Por confirmar con Inchcape desde cuándo corre en estas unidades.",
+      garantia: "Garantía de fábrica Volvo Chile.",
       mantencion: "Cada 10.000 km o 1 año, lo que ocurra primero.",
       mantKm: 10000,
       mantMeses: 12,
       notasInternas: [
         "Es mild hybrid, no enchufable ni híbrido completo: no anda en modo eléctrico. Decirlo antes de cerrar.",
+        "Garantía: plazo en el dossier general; confirmar con Inchcape desde cuándo corre en estas unidades.",
         "Volvo presentó en septiembre de 2026 un XC40 renovado que se fabrica en Gante desde fines de 2026, sin fecha para Chile. No negarlo ni inventar fechas.",
         "Especificación europea: caja de doble embrague de 7 y 0–100 en 7,6 s (los XC40 2023–2024 tenían automática de 8). Mercado de origen y año de fabricación: por confirmar con Inchcape.",
         "Erratas de la ficha MY27: dice \"2.0 Twin Engine\" (es 2.0 turbo mild hybrid) y \"Cuero Nórdico\" (es tapiz Nordico, sin cuero). No repetirlas.",
@@ -326,7 +338,7 @@ const GENIUS_DATA = {
       equipamiento: [
         {item:"Pilot Assist (hasta 130 km/h)",              core:"Sí",                 ultra:"Sí"},
         {item:"Techo panorámico eléctrico",                 core:"Sí",                 ultra:"Sí"},
-        {item:"Tapiz",                                      core:"Nórdico",            ultra:"Cuero napa ventilado"},
+        {item:"Tapiz",                                      core:"Nordico",            ultra:"Cuero napa ventilado"},
         {item:"Asientos delanteros y volante calefaccionados",core:"—",                ultra:"Sí"},
         {item:"Cámaras de estacionamiento",                 core:"Trasera",            ultra:"360°"},
         {item:"Audio",                                      core:"High Performance",   ultra:"Harman Kardon"},

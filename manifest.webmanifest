@@ -1,7 +1,7 @@
 {
   "name": "Genius · Product Genius Volvo",
   "short_name": "Genius",
-  "description": "Fichas de modelos y calculadoras de energía, costo total, carga y regeneración para el salón.",
+  "description": "Fichas de la gama Volvo Chile y calculadoras de energía, costo total, carga, autonomía e híbrido enchufable para el salón.",
   "lang": "es-CL",
   "start_url": "./index.html#gama",
   "scope": "./",
